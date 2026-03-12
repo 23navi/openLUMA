@@ -53,3 +53,6 @@ next-env.d.ts
 # generated data
 /data
 /logs
+
+# docs
+/docs
