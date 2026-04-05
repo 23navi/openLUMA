@@ -1,13 +1,10 @@
-<p align="center">
-  <img src="assets/banner.png" alt="OpenMAIC banner" width="720" />
-</p>
 
-# OpenMAIC (openLUMA)
+# openLUMA
 
-OpenMAIC is the repository and legacy integration identifier for **openLUMA**, an open-source AI classroom studio. It turns a prompt or uploaded PDF into an interactive, multi-agent lesson with slides, quizzes, simulations, project-based learning scenes, and live classroom discussion.
+**openLUMA** is an open-source AI classroom studio that turns a prompt or uploaded PDF into an interactive, multi-agent lesson with slides, quizzes, simulations, project-based learning scenes, and live classroom discussion.
 
 <p align="center">
-  <a href="https://open.maic.chat/">Live demo</a>
+  <a href="https://openluma.app/">Live demo</a>
   ·
   <a href="#quick-start">Quick start</a>
   ·
@@ -18,17 +15,14 @@ OpenMAIC is the repository and legacy integration identifier for **openLUMA**, a
   <a href="#openclaw">OpenClaw</a>
 </p>
 
-> [!NOTE]
-> `openLUMA` is the product name used in the app UI. `OpenMAIC` is still used by the repository name, hosted demo URL, and OpenClaw skill ID.
-
 ## Features
 
-- Generate a full classroom from a free-form prompt or uploaded PDF
-- Mix four scene types: `slide`, `quiz`, `interactive`, and `pbl`
-- Run multi-agent lessons with teacher, assistant, and student personas
-- Enable optional web search, image generation, video generation, TTS, and ASR
-- Export editable PowerPoint decks and resource packs
-- Self-host with Next.js, Docker, or Vercel
+* Generate a full classroom from a free-form prompt or uploaded PDF
+* Mix four scene types: `slide`, `quiz`, `interactive`, and `pbl`
+* Run multi-agent lessons with teacher, assistant, and student personas
+* Enable optional web search, image generation, video generation, TTS, and ASR
+* Export editable PowerPoint decks and resource packs
+* Self-host with Next.js, Docker, or Vercel
 
 <table>
 <tr>
@@ -75,34 +69,34 @@ Create PBL scenes with roles, issue boards, guided chat, and workspace flows.
 
 Additional capabilities:
 
-- Whiteboard playback, laser and spotlight effects, and discussion TTS
-- PDF parsing with `unpdf` or MinerU-compatible backends
-- Server-side image, video, and narration generation
-- Classroom languages: `en-US`, `hi-IN`, `gu-IN`, `mr-IN`
-- Async classroom generation jobs with pollable status
-- Persisted classroom JSON under `data/classrooms`
+* Whiteboard playback, laser and spotlight effects, and discussion TTS
+* PDF parsing with `unpdf` or MinerU-compatible backends
+* Server-side image, video, and narration generation
+* Classroom languages: `en-US`, `hi-IN`, `gu-IN`, `mr-IN`
+* Async classroom generation jobs with pollable status
+* Persisted classroom JSON under `data/classrooms`
 
 ## Tech Stack
 
-- Next.js 16 App Router
-- React 19 and TypeScript 5
-- pnpm workspace with local `mathml2omml` and `pptxgenjs` packages
-- Zustand, LangGraph, ProseMirror, ECharts, Tailwind CSS 4
-- Vitest and Playwright
+* Next.js 16 App Router
+* React 19 and TypeScript 5
+* pnpm workspace with local `mathml2omml` and `pptxgenjs` packages
+* Zustand, LangGraph, ProseMirror, ECharts, Tailwind CSS 4
+* Vitest and Playwright
 
 ## Quick Start
 
 ### Prerequisites
 
-- Node.js 20.9+
-- pnpm 10+
-- Optional: Docker for containerized local runs
+* Node.js 20.9+
+* pnpm 10+
+* Optional: Docker for containerized local runs
 
 ### 1. Install
 
 ```bash
-git clone https://github.com/THU-MAIC/OpenMAIC.git
-cd OpenMAIC
+git clone https://github.com/your-org/openluma.git
+cd openluma
 pnpm install
 ```
 
@@ -114,12 +108,12 @@ Copy the example env file:
 cp .env.example .env.local
 ```
 
-OpenMAIC loads server-side provider settings from:
+openLUMA loads server-side provider settings from:
 
 1. `server-providers.yml`, if present
 2. Environment variables from `.env.local` or your host environment, which override matching YAML fields
 
-Generation APIs use the OpenMAIC server's own provider configuration. They do not automatically reuse credentials from another client or assistant session.
+Generation APIs use the openLUMA server's own provider configuration. They do not automatically reuse credentials from another client or assistant session.
 
 For the smallest setup, configure one LLM provider and set `DEFAULT_MODEL` explicitly if you do not want the default `gpt-4o-mini` fallback.
 
@@ -157,17 +151,17 @@ web-search:
 
 Optional provider groups:
 
-- `PDF_*` for PDF parsing
-- `TAVILY_API_KEY` for web search
-- `IMAGE_*` for image generation
-- `VIDEO_*` for video generation
-- `TTS_*` for server-side narration
-- `ASR_*` for transcription
+* `PDF_*` for PDF parsing
+* `TAVILY_API_KEY` for web search
+* `IMAGE_*` for image generation
+* `VIDEO_*` for video generation
+* `TTS_*` for server-side narration
+* `ASR_*` for transcription
 
 Important model note:
 
-- Include the provider prefix in `DEFAULT_MODEL`, such as `google:...`, `anthropic:...`, or `openai:...`
-- Bare model IDs are parsed as OpenAI models by default
+* Include the provider prefix in `DEFAULT_MODEL`, such as `google:...`, `anthropic:...`, or `openai:...`
+* Bare model IDs are parsed as OpenAI models by default
 
 ### 3. Run the app
 
@@ -200,8 +194,8 @@ curl -fsS http://localhost:3000/api/health
 
 Generated classroom data is stored in:
 
-- `data/classrooms`
-- `data/classroom-jobs`
+* `data/classrooms`
+* `data/classroom-jobs`
 
 The provided Docker Compose file persists `/app/data` via the `openluma-data` volume.
 
@@ -218,17 +212,17 @@ The provided Docker Compose file persists `/app/data` via the `openluma-data` vo
 
 Useful routes for local integration and smoke testing:
 
-| Route | Method | Purpose |
-| --- | --- | --- |
-| `/api/health` | `GET` | Service health and optional feature capabilities |
-| `/api/server-providers` | `GET` | Exposed server-side provider availability |
-| `/api/parse-pdf` | `POST` | Parse an uploaded PDF |
-| `/api/generate-classroom` | `POST` | Start an async classroom generation job |
-| `/api/generate-classroom/[jobId]` | `GET` | Poll classroom generation status |
-| `/api/classroom` | `GET` / `POST` | Read or persist a classroom |
-| `/api/chat` | `POST` | Stateless SSE chat for live classroom interactions |
-| `/api/transcription` | `POST` | ASR transcription |
-| `/api/quiz-grade` | `POST` | Quiz grading |
+| Route                             | Method         | Purpose                                            |
+| --------------------------------- | -------------- | -------------------------------------------------- |
+| `/api/health`                     | `GET`          | Service health and optional feature capabilities   |
+| `/api/server-providers`           | `GET`          | Exposed server-side provider availability          |
+| `/api/parse-pdf`                  | `POST`         | Parse an uploaded PDF                              |
+| `/api/generate-classroom`         | `POST`         | Start an async classroom generation job            |
+| `/api/generate-classroom/[jobId]` | `GET`          | Poll classroom generation status                   |
+| `/api/classroom`                  | `GET` / `POST` | Read or persist a classroom                        |
+| `/api/chat`                       | `POST`         | Stateless SSE chat for live classroom interactions |
+| `/api/transcription`              | `POST`         | ASR transcription                                  |
+| `/api/quiz-grade`                 | `POST`         | Quiz grading                                       |
 
 Example generation request:
 
@@ -246,16 +240,16 @@ The response returns a `jobId` and `pollUrl`. Poll until `status` becomes `succe
 
 ## OpenClaw
 
-The repository includes an OpenClaw skill at `skills/openmaic` for guided setup and classroom generation from chat apps.
+The repository includes an OpenClaw skill at `skills/openluma` for guided setup and classroom generation from chat apps.
 
-- Hosted mode uses `https://open.maic.chat/`
-- Self-hosted mode targets your local or deployed instance
-- The skill walks through repo selection, startup mode, provider configuration, health checks, and async classroom generation
+* Hosted mode uses your deployed openLUMA instance
+* Self-hosted mode targets your local or deployed environment
+* The skill walks through repo selection, startup mode, provider configuration, health checks, and async classroom generation
 
 If you use OpenClaw / ClawHub:
 
 ```bash
-clawhub install openmaic
+clawhub install openluma
 ```
 
 ## Development
@@ -280,7 +274,7 @@ pnpm exec playwright install
 ## Project Structure
 
 ```text
-OpenMAIC/
+openluma/
 |- app/                    # Next.js routes and API handlers
 |- components/             # UI, playback, renderers, settings, chat
 |- lib/                    # generation, orchestration, providers, stores, export
@@ -288,23 +282,23 @@ OpenMAIC/
 |- public/                 # static assets and logos
 |- e2e/                    # Playwright fixtures and end-to-end tests
 |- tests/                  # Vitest unit tests
-|- skills/openmaic/        # OpenClaw skill and setup references
+|- skills/openluma/        # OpenClaw skill and setup references
 |- data/                   # generated at runtime for classrooms and jobs
 ```
 
 Core architectural areas:
 
-- `lib/generation` for outline and scene generation
-- `lib/orchestration` for multi-agent chat and director flows
-- `lib/playback` for lesson playback state
-- `lib/action` for whiteboard, speech, and visual classroom actions
-- `lib/server` for provider resolution, job orchestration, and persistence
+* `lib/generation` for outline and scene generation
+* `lib/orchestration` for multi-agent chat and director flows
+* `lib/playback` for lesson playback state
+* `lib/action` for whiteboard, speech, and visual classroom actions
+* `lib/server` for provider resolution, job orchestration, and persistence
 
 ## Deployment
 
 ### Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FTHU-MAIC%2FOpenMAIC&envDescription=Configure%20at%20least%20one%20LLM%20provider%20API%20key%20(e.g.%20OPENAI_API_KEY%2C%20ANTHROPIC_API_KEY).%20All%20providers%20are%20optional.&envLink=https%3A%2F%2Fgithub.com%2FTHU-MAIC%2FOpenMAIC%2Fblob%2Fmain%2F.env.example&project-name=openmaic&framework=nextjs)
+Deploy using the standard Next.js deployment workflow on Vercel or any compatible hosting provider. Ensure at least one LLM provider API key is configured (for example `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`).
 
 ### Docker
 
@@ -327,25 +321,18 @@ Issues, bug reports, and pull requests are welcome. A good place to start is:
 
 ## Community
 
-- Feishu group: [community/feishu.md](community/feishu.md)
-- Hosted demo: [open.maic.chat](https://open.maic.chat/)
+* Community group: see `community/` directory
+* Hosted demo: your openLUMA deployment URL
 
 ## Citation
 
-If OpenMAIC helps your research, please consider citing:
+If openLUMA helps your research, please consider citing:
 
 ```bibtex
-@Article{JCST-2509-16000,
-  title = {From MOOC to MAIC: Reimagine Online Teaching and Learning through LLM-driven Agents},
-  journal = {Journal of Computer Science and Technology},
-  volume = {},
-  number = {},
-  pages = {},
-  year = {2026},
-  issn = {1000-9000(Print) /1860-4749(Online)},
-  doi = {10.1007/s11390-025-6000-0},
-  url = {https://jcst.ict.ac.cn/en/article/doi/10.1007/s11390-025-6000-0},
-  author = {Ji-Fan Yu and Daniel Zhang-Li and Zhe-Yuan Zhang and Yu-Cheng Wang and Hao-Xuan Li and Joy Jia Yin Lim and Zhan-Xin Hao and Shang-Qing Tu and Lu Zhang and Xu-Sheng Dai and Jian-Xiao Jiang and Shen Yang and Fei Qin and Ze-Kun Li and Xin Cong and Bin Xu and Lei Hou and Man-Li Li and Juan-Zi Li and Hui-Qin Liu and Yu Zhang and Zhi-Yuan Liu and Mao-Song Sun}
+@Article{openluma-platform,
+  title = {openLUMA: LLM-driven Interactive Classroom Generation Platform},
+  journal = {Educational Technology Systems},
+  year = {2026}
 }
 ```
 
@@ -353,4 +340,4 @@ If OpenMAIC helps your research, please consider citing:
 
 This project is licensed under the [GNU Affero General Public License v3.0](LICENSE).
 
-For commercial licensing inquiries, contact `thu_maic@tsinghua.edu.cn`.
+For commercial licensing inquiries, contact `support@openluma.ai`.
