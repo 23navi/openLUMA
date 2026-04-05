@@ -37,6 +37,7 @@ import { ASR_PROVIDERS, getASRSupportedLanguages } from '@/lib/audio/constants';
 import type { ImageProviderId, VideoProviderId } from '@/lib/media/types';
 import type { TTSProviderId, ASRProviderId } from '@/lib/audio/types';
 import type { SettingsSection } from '@/lib/types/settings';
+import { isChineseLanguage } from '@/lib/classroom-languages';
 
 interface MediaPopoverProps {
   onSettingsOpen: (section: SettingsSection) => void;
@@ -60,7 +61,6 @@ const VIDEO_PROVIDER_ICONS: Record<string, string> = {
 type TabId = 'image' | 'video' | 'tts' | 'asr';
 
 const LANG_LABELS: Record<string, string> = {
-  zh: '中文',
   en: 'English',
   ja: '日本語',
   ko: '한국어',
@@ -72,6 +72,8 @@ const LANG_LABELS: Record<string, string> = {
   it: 'Italiano',
   ar: 'العربية',
   hi: 'हिन्दी',
+  gu: 'ગુજરાતી',
+  mr: 'मराठी',
 };
 
 const TABS: Array<{ id: TabId; icon: LucideIcon; label: string }> = [
@@ -96,17 +98,13 @@ function getTTSProviderName(providerId: TTSProviderId, t: (key: string) => strin
   return names[providerId] || providerId;
 }
 
-/** Extract the English name from voice name format "ChineseName (English)" */
-function getVoiceDisplayName(name: string, lang: string): string {
-  if (lang === 'en-US') {
-    const match = name.match(/\(([^)]+)\)/);
-    return match ? match[1] : name;
-  }
-  return name;
+function getVoiceDisplayName(name: string): string {
+  const match = name.match(/\(([^)]+)\)\s*$/);
+  return match ? match[1] : name;
 }
 
 export function MediaPopover({ onSettingsOpen }: MediaPopoverProps) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('image');
   const { previewing, startPreview, stopPreview } = useTTSPreview();
@@ -228,6 +226,7 @@ export function MediaPopover({ onSettingsOpen }: MediaPopoverProps) {
       if (p.id === 'browser-native-tts' && browserVoices.length > 0) {
         const byLang = new Map<string, SpeechSynthesisVoice[]>();
         for (const v of browserVoices) {
+          if (isChineseLanguage(v.lang)) continue;
           const langKey = v.lang.split('-')[0]; // "zh-CN" → "zh"
           if (!byLang.has(langKey)) byLang.set(langKey, []);
           byLang.get(langKey)!.push(v);
@@ -245,20 +244,23 @@ export function MediaPopover({ onSettingsOpen }: MediaPopoverProps) {
         continue;
       }
 
+      const voices = getTTSVoices(p.id);
+      if (voices.length === 0) continue;
+
       groups.push({
         groupId: p.id,
         groupName: providerName,
         groupIcon: p.icon,
         available: true,
-        items: getTTSVoices(p.id).map((v) => ({
+        items: voices.map((v) => ({
           id: v.id,
-          name: getVoiceDisplayName(v.name, locale),
+          name: getVoiceDisplayName(v.name),
         })),
       });
     }
 
     return groups;
-  }, [ttsProvidersConfig, locale, browserVoices, t]);
+  }, [ttsProvidersConfig, browserVoices, t]);
 
   // TTS preview
   const handlePreview = useCallback(async () => {

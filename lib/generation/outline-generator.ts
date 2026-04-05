@@ -17,6 +17,11 @@ import { parseJsonResponse } from './json-repair';
 import { uniquifyMediaElementIds } from './scene-builder';
 import type { AICallFn, GenerationResult, GenerationCallbacks } from './pipeline-types';
 import { createLogger } from '@/lib/logger';
+import {
+  getClassroomLanguagePromptName,
+  getNoImagesAvailableText,
+  getNoneText,
+} from '@/lib/classroom-languages';
 const log = createLogger('Generation');
 
 /**
@@ -39,8 +44,7 @@ export async function generateSceneOutlinesFromRequirements(
   },
 ): Promise<GenerationResult<SceneOutline[]>> {
   // Build available images description for the prompt
-  let availableImagesText =
-    requirements.language === 'zh-CN' ? '无可用图片' : 'No images available';
+  let availableImagesText = getNoImagesAvailableText(requirements.language);
   let visionImages: Array<{ id: string; src: string }> | undefined;
 
   if (pdfImages && pdfImages.length > 0) {
@@ -99,16 +103,14 @@ export async function generateSceneOutlinesFromRequirements(
     // New simplified variables
     requirement: requirements.requirement,
     language: requirements.language,
+    languageName: getClassroomLanguagePromptName(requirements.language),
     pdfContent: pdfText
       ? pdfText.substring(0, MAX_PDF_CONTENT_CHARS)
-      : requirements.language === 'zh-CN'
-        ? '无'
-        : 'None',
+      : getNoneText(requirements.language),
     availableImages: availableImagesText,
     userProfile: userProfileText,
     mediaGenerationPolicy,
-    researchContext:
-      options?.researchContext || (requirements.language === 'zh-CN' ? '无' : 'None'),
+    researchContext: options?.researchContext || getNoneText(requirements.language),
     // Server-side generation populates this via options; client-side populates via formatTeacherPersonaForPrompt
     teacherContext: options?.teacherContext || '',
   });
@@ -122,7 +124,7 @@ export async function generateSceneOutlinesFromRequirements(
       currentStage: 1,
       overallProgress: 20,
       stageProgress: 50,
-      statusMessage: '正在分析需求，生成场景大纲...',
+      statusMessage: 'Analyzing requirements and generating scene outlines...',
       scenesGenerated: 0,
       totalScenes: 0,
     });
@@ -151,7 +153,7 @@ export async function generateSceneOutlinesFromRequirements(
       currentStage: 1,
       overallProgress: 50,
       stageProgress: 100,
-      statusMessage: `已生成 ${result.length} 个场景大纲`,
+      statusMessage: `Generated ${result.length} scene outlines`,
       scenesGenerated: 0,
       totalScenes: result.length,
     });

@@ -34,6 +34,11 @@ import type {
   ASRProviderId,
   ASRProviderConfig,
 } from './types';
+import {
+  isChineseLanguage,
+  normalizeClassroomLanguage,
+  type ClassroomLanguage,
+} from '@/lib/classroom-languages';
 
 /**
  * TTS Provider Registry
@@ -174,36 +179,53 @@ export const TTS_PROVIDERS: Record<TTSProviderId, TTSProviderConfig> = {
     defaultModelId: '',
     voices: [
       {
-        id: 'zh-CN-XiaoxiaoNeural',
-        name: '晓晓 (女)',
-        language: 'zh-CN',
-        gender: 'female',
-      },
-      {
-        id: 'zh-CN-YunxiNeural',
-        name: '云希 (男)',
-        language: 'zh-CN',
-        gender: 'male',
-      },
-      {
-        id: 'zh-CN-XiaoyiNeural',
-        name: '晓伊 (女)',
-        language: 'zh-CN',
-        gender: 'female',
-      },
-      {
-        id: 'zh-CN-YunjianNeural',
-        name: '云健 (男)',
-        language: 'zh-CN',
-        gender: 'male',
-      },
-      {
         id: 'en-US-JennyNeural',
         name: 'Jenny',
         language: 'en-US',
         gender: 'female',
       },
-      { id: 'en-US-GuyNeural', name: 'Guy', language: 'en-US', gender: 'male' },
+      {
+        id: 'en-US-GuyNeural',
+        name: 'Guy',
+        language: 'en-US',
+        gender: 'male',
+      },
+      {
+        id: 'hi-IN-AnanyaNeural',
+        name: 'Ananya',
+        language: 'hi-IN',
+        gender: 'female',
+      },
+      {
+        id: 'hi-IN-AaravNeural',
+        name: 'Aarav',
+        language: 'hi-IN',
+        gender: 'male',
+      },
+      {
+        id: 'gu-IN-DhwaniNeural',
+        name: 'Dhwani',
+        language: 'gu-IN',
+        gender: 'female',
+      },
+      {
+        id: 'gu-IN-NiranjanNeural',
+        name: 'Niranjan',
+        language: 'gu-IN',
+        gender: 'male',
+      },
+      {
+        id: 'mr-IN-AarohiNeural',
+        name: 'Aarohi',
+        language: 'mr-IN',
+        gender: 'female',
+      },
+      {
+        id: 'mr-IN-ManoharNeural',
+        name: 'Manohar',
+        language: 'mr-IN',
+        gender: 'male',
+      },
     ],
     supportedFormats: ['mp3', 'wav', 'ogg'],
     speedRange: { min: 0.5, max: 2.0, default: 1.0 },
@@ -274,7 +296,7 @@ export const TTS_PROVIDERS: Record<TTSProviderId, TTSProviderConfig> = {
 
   'qwen-tts': {
     id: 'qwen-tts',
-    name: 'Qwen TTS (阿里云百炼)',
+    name: 'Qwen TTS',
     requiresApiKey: true,
     defaultBaseUrl: 'https://dashscope.aliyuncs.com/api/v1',
     icon: '/logos/bailian.svg',
@@ -717,7 +739,7 @@ export const TTS_PROVIDERS: Record<TTSProviderId, TTSProviderConfig> = {
 
   'doubao-tts': {
     id: 'doubao-tts',
-    name: '豆包 TTS 2.0（火山引擎）',
+    name: 'Doubao TTS 2.0',
     requiresApiKey: true,
     defaultBaseUrl: 'https://openspeech.bytedance.com/api/v3/tts',
     icon: '/logos/doubao.svg',
@@ -885,7 +907,7 @@ export const TTS_PROVIDERS: Record<TTSProviderId, TTSProviderConfig> = {
 
   'browser-native-tts': {
     id: 'browser-native-tts',
-    name: '浏览器原生 (Web Speech API)',
+    name: 'Browser Native TTS',
     requiresApiKey: false,
     icon: '/logos/browser.svg',
     models: [],
@@ -893,7 +915,7 @@ export const TTS_PROVIDERS: Record<TTSProviderId, TTSProviderConfig> = {
     voices: [
       // Note: Actual voices are determined by the browser and OS
       // These are placeholder - real voices are fetched dynamically via speechSynthesis.getVoices()
-      { id: 'default', name: '默认', language: 'zh-CN', gender: 'neutral' },
+      { id: 'default', name: 'Default', language: 'en-US', gender: 'neutral' },
     ],
     supportedFormats: ['browser'], // Browser native audio
     speedRange: { min: 0.1, max: 10.0, default: 1.0 },
@@ -988,7 +1010,7 @@ export const ASR_PROVIDERS: Record<ASRProviderId, ASRProviderConfig> = {
 
   'qwen-asr': {
     id: 'qwen-asr',
-    name: 'Qwen ASR (阿里云百炼)',
+    name: 'Qwen ASR',
     requiresApiKey: true,
     defaultBaseUrl: 'https://dashscope.aliyuncs.com/api/v1',
     icon: '/logos/bailian.svg',
@@ -1033,7 +1055,7 @@ export const ASR_PROVIDERS: Record<ASRProviderId, ASRProviderConfig> = {
 
   'browser-native': {
     id: 'browser-native',
-    name: '浏览器原生 ASR (Web Speech API)',
+    name: 'Browser Native ASR',
     requiresApiKey: false,
     icon: '/logos/browser.svg',
     models: [],
@@ -1119,12 +1141,12 @@ export function getTTSProvider(providerId: TTSProviderId): TTSProviderConfig | u
  */
 export const DEFAULT_TTS_VOICES: Record<TTSProviderId, string> = {
   'openai-tts': 'alloy',
-  'azure-tts': 'zh-CN-XiaoxiaoNeural',
+  'azure-tts': 'en-US-JennyNeural',
   'glm-tts': 'tongtong',
-  'qwen-tts': 'Cherry',
-  'doubao-tts': 'zh_female_vv_uranus_bigtts',
+  'qwen-tts': 'Bodega',
+  'doubao-tts': 'en_female_dacey_uranus_bigtts',
   'elevenlabs-tts': 'EXAVITQu4vr4xnSDxMaL',
-  'minimax-tts': 'female-yujie',
+  'minimax-tts': 'English_Graceful_Lady',
   'browser-native-tts': 'default',
 };
 
@@ -1143,7 +1165,12 @@ export const DEFAULT_TTS_MODELS: Record<TTSProviderId, string> = {
  * Get voices for a specific TTS provider
  */
 export function getTTSVoices(providerId: TTSProviderId): TTSVoiceInfo[] {
-  return TTS_PROVIDERS[providerId]?.voices || [];
+  return (TTS_PROVIDERS[providerId]?.voices || [])
+    .filter((voice) => !isChineseLanguage(voice.language))
+    .map((voice) => ({
+      ...voice,
+      name: sanitizeVoiceDisplayName(voice.name),
+    }));
 }
 
 /**
@@ -1164,5 +1191,54 @@ export function getASRProvider(providerId: ASRProviderId): ASRProviderConfig | u
  * Get supported languages for a specific ASR provider
  */
 export function getASRSupportedLanguages(providerId: ASRProviderId): string[] {
-  return ASR_PROVIDERS[providerId]?.supportedLanguages || [];
+  return (ASR_PROVIDERS[providerId]?.supportedLanguages || []).filter(
+    (language) => language === 'auto' || !isChineseLanguage(language),
+  );
 }
+
+export function hasVisibleTTSVoices(providerId: TTSProviderId): boolean {
+  return providerId === 'browser-native-tts' || getTTSVoices(providerId).length > 0;
+}
+
+export function hasVisibleASRLanguages(providerId: ASRProviderId): boolean {
+  return getASRSupportedLanguages(providerId).length > 0;
+}
+
+export function getDefaultTTSVoice(
+  providerId: TTSProviderId,
+  language?: ClassroomLanguage | string | null,
+): string {
+  const visibleVoices = getTTSVoices(providerId);
+  const normalizedLanguage = normalizeClassroomLanguage(language);
+  const preferredVoice = LANGUAGE_SPECIFIC_DEFAULT_TTS_VOICES[providerId]?.[normalizedLanguage];
+
+  if (preferredVoice && visibleVoices.some((voice) => voice.id === preferredVoice)) {
+    return preferredVoice;
+  }
+
+  const fallbackVoice = DEFAULT_TTS_VOICES[providerId];
+  if (
+    providerId === 'browser-native-tts' ||
+    visibleVoices.some((voice) => voice.id === fallbackVoice)
+  ) {
+    return fallbackVoice;
+  }
+
+  return visibleVoices[0]?.id || fallbackVoice || 'default';
+}
+
+function sanitizeVoiceDisplayName(name: string): string {
+  const match = name.match(/\(([^)]+)\)\s*$/);
+  return match?.[1]?.trim() || name;
+}
+
+const LANGUAGE_SPECIFIC_DEFAULT_TTS_VOICES: Partial<
+  Record<TTSProviderId, Partial<Record<ClassroomLanguage, string>>>
+> = {
+  'azure-tts': {
+    'en-US': 'en-US-JennyNeural',
+    'hi-IN': 'hi-IN-AnanyaNeural',
+    'gu-IN': 'gu-IN-DhwaniNeural',
+    'mr-IN': 'mr-IN-AarohiNeural',
+  },
+};

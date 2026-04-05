@@ -1,8 +1,8 @@
 export type LocaleEntry = {
   code: string;
-  /** Native name shown in dropdown, e.g. '简体中文' */
+  /** Native name shown in dropdown, e.g. 'English' */
   label: string;
-  /** Short label shown on the toggle button, e.g. 'CN' */
+  /** Short label shown on the toggle button, e.g. 'EN' */
   shortLabel: string;
 };
 
@@ -14,6 +14,8 @@ export type LocaleEntry = {
  *   2. Add an entry here
  */
 export const supportedLocales = [
-  { code: 'zh-CN', label: '简体中文', shortLabel: 'CN' },
   { code: 'en-US', label: 'English', shortLabel: 'EN' },
+  { code: 'hi-IN', label: 'हिन्दी', shortLabel: 'HI' },
+  { code: 'gu-IN', label: 'ગુજરાતી', shortLabel: 'GU' },
+  { code: 'mr-IN', label: 'मराठी', shortLabel: 'MR' },
 ] as const satisfies readonly LocaleEntry[];

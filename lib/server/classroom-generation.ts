@@ -27,6 +27,10 @@ import {
   replaceMediaPlaceholders,
   generateTTSForClassroom,
 } from '@/lib/server/classroom-media-generation';
+import {
+  getClassroomLanguagePromptName,
+  normalizeClassroomLanguage,
+} from '@/lib/classroom-languages';
 import type { UserRequirements } from '@/lib/types/generation';
 import type { Scene, Stage } from '@/lib/types/stage';
 import { AGENT_COLOR_PALETTE, AGENT_DEFAULT_AVATARS } from '@/lib/constants/agent-defaults';
@@ -98,10 +102,6 @@ function createInMemoryStore(stage: Stage): StageStore {
   };
 }
 
-function normalizeLanguage(language?: string): 'zh-CN' | 'en-US' {
-  return language === 'en-US' ? 'en-US' : 'zh-CN';
-}
-
 function stripCodeFences(text: string): string {
   let cleaned = text.trim();
   if (cleaned.startsWith('```')) {
@@ -115,6 +115,7 @@ async function generateAgentProfiles(
   language: string,
   aiCall: AICallFn,
 ): Promise<AgentInfo[]> {
+  const languageName = getClassroomLanguagePromptName(language);
   const systemPrompt =
     'You are an expert instructional designer. Generate agent profiles for a multi-agent classroom simulation. Return ONLY valid JSON, no markdown or explanation.';
 
@@ -125,7 +126,7 @@ Requirements:
 - Decide the appropriate number of agents based on the course content (typically 3-5)
 - Exactly 1 agent must have role "teacher", the rest can be "assistant" or "student"
 - Each agent needs: name, role, persona (2-3 sentences describing personality and teaching/learning style)
-- Names and personas must be in language: ${language}
+- Names and personas must be in ${languageName}
 
 Return a JSON object with this exact structure:
 {
@@ -220,7 +221,7 @@ export async function generateClassroom(
     return result.text;
   };
 
-  const lang = normalizeLanguage(input.language);
+  const lang = normalizeClassroomLanguage(input.language);
   const requirements: UserRequirements = {
     requirement,
     language: lang,
@@ -431,7 +432,7 @@ export async function generateClassroom(
     });
 
     try {
-      await generateTTSForClassroom(scenes, stageId, options.baseUrl);
+      await generateTTSForClassroom(scenes, stageId, options.baseUrl, input.language);
       log.info('TTS generation complete');
     } catch (err) {
       log.warn('TTS generation phase failed, continuing:', err);

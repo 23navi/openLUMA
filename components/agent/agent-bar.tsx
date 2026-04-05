@@ -26,6 +26,22 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import type { AgentConfig } from '@/lib/orchestration/registry/types';
 import type { TTSProviderId } from '@/lib/audio/types';
 import type { ProviderWithVoices } from '@/lib/audio/voice-resolver';
+import {
+  getClassroomLanguagePreviewText,
+  normalizeClassroomLanguage,
+} from '@/lib/classroom-languages';
+
+function getVoicePreviewContent() {
+  const courseLanguage =
+    typeof localStorage !== 'undefined'
+      ? normalizeClassroomLanguage(localStorage.getItem('generationLanguage'))
+      : normalizeClassroomLanguage(undefined);
+
+  return {
+    courseLanguage,
+    previewText: getClassroomLanguagePreviewText(courseLanguage),
+  };
+}
 
 function AgentVoicePill({
   agent,
@@ -80,13 +96,14 @@ function AgentVoicePill({
       stopPreview();
       setPreviewingId(key);
 
-      const courseLanguage =
-        (typeof localStorage !== 'undefined' && localStorage.getItem('generationLanguage')) ||
-        'zh-CN';
-      const previewText = courseLanguage === 'en-US' ? 'Welcome to AI Classroom' : '欢迎来到AI课堂';
+      const { courseLanguage, previewText } = getVoicePreviewContent();
 
       if (providerId === 'browser-native-tts') {
-        const { promise, cancel } = playBrowserTTSPreview({ text: previewText, voice: voiceId });
+        const { promise, cancel } = playBrowserTTSPreview({
+          text: previewText,
+          voice: voiceId,
+          lang: courseLanguage,
+        });
         previewCancelRef.current = cancel;
         try {
           await promise;
@@ -305,13 +322,14 @@ function TeacherVoicePill({
       stopPreview();
       setPreviewingId(key);
 
-      const courseLanguage =
-        (typeof localStorage !== 'undefined' && localStorage.getItem('generationLanguage')) ||
-        'zh-CN';
-      const previewText = courseLanguage === 'en-US' ? 'Welcome to AI Classroom' : '欢迎来到AI课堂';
+      const { courseLanguage, previewText } = getVoicePreviewContent();
 
       if (providerId === 'browser-native-tts') {
-        const { promise, cancel } = playBrowserTTSPreview({ text: previewText, voice: voiceId });
+        const { promise, cancel } = playBrowserTTSPreview({
+          text: previewText,
+          voice: voiceId,
+          lang: courseLanguage,
+        });
         previewCancelRef.current = cancel;
         try {
           await promise;

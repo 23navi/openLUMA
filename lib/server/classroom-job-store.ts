@@ -11,6 +11,7 @@ import {
   ensureClassroomJobsDir,
   writeJsonFileAtomic,
 } from '@/lib/server/classroom-storage';
+import { normalizeClassroomLanguage } from '@/lib/classroom-languages';
 
 export type ClassroomGenerationJobStatus = 'queued' | 'running' | 'succeeded' | 'failed';
 
@@ -49,7 +50,7 @@ function buildInputSummary(input: GenerateClassroomInput): ClassroomGenerationJo
   return {
     requirementPreview:
       input.requirement.length > 200 ? `${input.requirement.slice(0, 197)}...` : input.requirement,
-    language: input.language || 'zh-CN',
+    language: normalizeClassroomLanguage(input.language),
     hasPdf: !!input.pdfContent,
     pdfTextLength: input.pdfContent?.text.length || 0,
     pdfImageCount: input.pdfContent?.images.length || 0,

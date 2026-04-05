@@ -32,6 +32,12 @@ import { useTheme } from '@/lib/hooks/use-theme';
 import { nanoid } from 'nanoid';
 import { storePdfBlob } from '@/lib/utils/image-storage';
 import type { UserRequirements } from '@/lib/types/generation';
+import {
+  type ClassroomLanguage,
+  defaultClassroomLanguage,
+  isClassroomLanguage,
+  normalizeClassroomLanguage,
+} from '@/lib/classroom-languages';
 import { useSettingsStore } from '@/lib/store/settings';
 import { useUserProfileStore, AVATAR_OPTIONS } from '@/lib/store/user-profile';
 import {
@@ -58,14 +64,14 @@ const RECENT_OPEN_STORAGE_KEY = 'recentClassroomsOpen';
 interface FormState {
   pdfFile: File | null;
   requirement: string;
-  language: 'zh-CN' | 'en-US';
+  language: ClassroomLanguage;
   webSearch: boolean;
 }
 
 const initialFormState: FormState = {
   pdfFile: null,
   requirement: '',
-  language: 'zh-CN',
+  language: defaultClassroomLanguage,
   webSearch: false,
 };
 
@@ -101,11 +107,10 @@ function HomePage() {
       const savedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
       const updates: Partial<FormState> = {};
       if (savedWebSearch === 'true') updates.webSearch = true;
-      if (savedLanguage === 'zh-CN' || savedLanguage === 'en-US') {
+      if (isClassroomLanguage(savedLanguage)) {
         updates.language = savedLanguage;
       } else {
-        const detected = navigator.language?.startsWith('zh') ? 'zh-CN' : 'en-US';
-        updates.language = detected;
+        updates.language = normalizeClassroomLanguage(navigator.language);
       }
       if (Object.keys(updates).length > 0) {
         setForm((prev) => ({ ...prev, ...updates }));

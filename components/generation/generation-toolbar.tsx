@@ -21,6 +21,11 @@ import type { WebSearchProviderId } from '@/lib/web-search/types';
 import type { ProviderId } from '@/lib/ai/providers';
 import type { SettingsSection } from '@/lib/types/settings';
 import { MediaPopover } from '@/components/generation/media-popover';
+import {
+  type ClassroomLanguage,
+  supportedClassroomLanguages,
+  getClassroomLanguageShortLabel,
+} from '@/lib/classroom-languages';
 
 // ─── Constants ───────────────────────────────────────────────
 const MAX_PDF_SIZE_MB = 50;
@@ -28,8 +33,8 @@ const MAX_PDF_SIZE_BYTES = MAX_PDF_SIZE_MB * 1024 * 1024;
 
 // ─── Types ───────────────────────────────────────────────────
 export interface GenerationToolbarProps {
-  language: 'zh-CN' | 'en-US';
-  onLanguageChange: (lang: 'zh-CN' | 'en-US') => void;
+  language: ClassroomLanguage;
+  onLanguageChange: (lang: ClassroomLanguage) => void;
   webSearch: boolean;
   onWebSearchChange: (v: boolean) => void;
   onSettingsOpen: (section?: SettingsSection) => void;
@@ -357,17 +362,34 @@ export function GenerationToolbar({
         </Tooltip>
       )}
 
-      {/* ── Language pill ── */}
+      {/* ── Language picker ── */}
       <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            onClick={() => onLanguageChange(language === 'zh-CN' ? 'en-US' : 'zh-CN')}
-            className={pillMuted}
-          >
-            <Globe className="size-3.5" />
-            <span>{language === 'zh-CN' ? '中文' : 'EN'}</span>
-          </button>
-        </TooltipTrigger>
+        <Popover>
+          <TooltipTrigger asChild>
+            <PopoverTrigger asChild>
+              <button className={pillMuted}>
+                <Globe className="size-3.5" />
+                <span>{getClassroomLanguageShortLabel(language)}</span>
+              </button>
+            </PopoverTrigger>
+          </TooltipTrigger>
+          <PopoverContent align="start" className="w-40 p-1">
+            {supportedClassroomLanguages.map((entry) => (
+              <button
+                key={entry.code}
+                onClick={() => onLanguageChange(entry.code)}
+                className={cn(
+                  'w-full rounded-md px-3 py-2 text-left text-sm transition-colors',
+                  language === entry.code
+                    ? 'bg-violet-50 text-violet-700 dark:bg-violet-950/30 dark:text-violet-300'
+                    : 'hover:bg-muted',
+                )}
+              >
+                {entry.label}
+              </button>
+            ))}
+          </PopoverContent>
+        </Popover>
         <TooltipContent>{t('toolbar.languageHint')}</TooltipContent>
       </Tooltip>
 

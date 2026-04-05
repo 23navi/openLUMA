@@ -60,7 +60,7 @@ vi.mock('@/lib/audio/constants', () => ({
       requiresApiKey: true,
       defaultModelId: '',
       models: [],
-      voices: [{ id: 'zh-CN-XiaoxiaoNeural', name: 'Xiaoxiao', language: 'zh-CN' }],
+      voices: [{ id: 'en-US-JennyNeural', name: 'Jenny', language: 'en-US' }],
       supportedFormats: ['mp3'],
     },
     'browser-native-tts': {
@@ -81,7 +81,7 @@ vi.mock('@/lib/audio/constants', () => ({
       requiresApiKey: true,
       defaultModelId: 'gpt-4o-mini-transcribe',
       models: [{ id: 'gpt-4o-mini-transcribe', name: 'GPT-4o Mini Transcribe' }],
-      supportedLanguages: ['auto', 'zh'],
+      supportedLanguages: ['auto', 'en', 'hi', 'mr'],
       supportedFormats: ['webm'],
     },
     'browser-native': {
@@ -90,14 +90,30 @@ vi.mock('@/lib/audio/constants', () => ({
       requiresApiKey: false,
       defaultModelId: '',
       models: [],
-      supportedLanguages: ['zh'],
+      supportedLanguages: ['en-US', 'hi-IN'],
       supportedFormats: ['browser'],
     },
   },
   DEFAULT_TTS_VOICES: {
     'openai-tts': 'alloy',
+    'azure-tts': 'en-US-JennyNeural',
     'browser-native-tts': 'default',
   },
+  getTTSVoices: (providerId: 'openai-tts' | 'azure-tts' | 'browser-native-tts') =>
+    ({
+      'openai-tts': [{ id: 'alloy', name: 'Alloy', language: 'en', gender: 'neutral' }],
+      'azure-tts': [{ id: 'en-US-JennyNeural', name: 'Jenny', language: 'en-US' }],
+      'browser-native-tts': [
+        { id: 'default', name: 'Default', language: 'en-US', gender: 'neutral' },
+      ],
+    })[providerId] || [],
+  getASRSupportedLanguages: (providerId: 'openai-whisper' | 'browser-native') =>
+    ({
+      'openai-whisper': ['auto', 'en', 'hi', 'mr'],
+      'browser-native': ['en-US', 'hi-IN'],
+    })[providerId] || [],
+  hasVisibleTTSVoices: () => true,
+  hasVisibleASRLanguages: () => true,
 }));
 
 vi.mock('@/lib/audio/types', () => ({}));

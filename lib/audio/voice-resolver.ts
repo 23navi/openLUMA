@@ -1,6 +1,6 @@
 import type { TTSProviderId } from '@/lib/audio/types';
 import type { AgentConfig } from '@/lib/orchestration/registry/types';
-import { TTS_PROVIDERS } from '@/lib/audio/constants';
+import { TTS_PROVIDERS, getTTSVoices } from '@/lib/audio/constants';
 
 export interface ResolvedVoice {
   providerId: TTSProviderId;
@@ -56,9 +56,7 @@ export function resolveAgentVoice(
  */
 export function getServerVoiceList(providerId: TTSProviderId): string[] {
   if (providerId === 'browser-native-tts') return [];
-  const provider = TTS_PROVIDERS[providerId];
-  if (!provider) return [];
-  return provider.voices.map((v) => v.id);
+  return getTTSVoices(providerId).map((voice) => voice.id);
 }
 
 export interface ModelVoiceGroup {
@@ -90,22 +88,24 @@ export function getAvailableProvidersWithVoices(
   for (const [id, config] of Object.entries(TTS_PROVIDERS)) {
     const providerId = id as TTSProviderId;
     if (providerId === 'browser-native-tts') continue;
-    if (config.voices.length === 0) continue;
+    const visibleVoices = getTTSVoices(providerId);
+    if (visibleVoices.length === 0) continue;
 
     const providerConfig = ttsProvidersConfig[providerId];
     const hasApiKey = providerConfig?.apiKey && providerConfig.apiKey.trim().length > 0;
     const isServerConfigured = providerConfig?.isServerConfigured === true;
 
     if (hasApiKey || isServerConfigured) {
-      const allVoices = config.voices.map((v) => ({ id: v.id, name: v.name }));
+      const allVoices = visibleVoices.map((voice) => ({ id: voice.id, name: voice.name }));
 
       // Build model groups
       const modelGroups: ModelVoiceGroup[] = [];
       if (config.models.length > 0) {
         for (const model of config.models) {
-          const compatibleVoices = config.voices
+          const compatibleVoices = visibleVoices
             .filter((v) => !v.compatibleModels || v.compatibleModels.includes(model.id))
             .map((v) => ({ id: v.id, name: v.name }));
+          if (compatibleVoices.length === 0) continue;
           modelGroups.push({
             modelId: model.id,
             modelName: model.name,
@@ -137,8 +137,6 @@ export function getAvailableProvidersWithVoices(
  * Find a voice display name across all providers.
  */
 export function findVoiceDisplayName(providerId: TTSProviderId, voiceId: string): string {
-  const provider = TTS_PROVIDERS[providerId];
-  if (!provider) return voiceId;
-  const voice = provider.voices.find((v) => v.id === voiceId);
+  const voice = getTTSVoices(providerId).find((entry) => entry.id === voiceId);
   return voice?.name ?? voiceId;
 }

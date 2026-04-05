@@ -5,6 +5,11 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import {
+  defaultClassroomLanguage,
+  inferSpeechLanguageFromText,
+  normalizeClassroomLanguage,
+} from '@/lib/classroom-languages';
 
 // Note: Window.SpeechSynthesis declaration is already in the global scope
 
@@ -15,19 +20,11 @@ export interface UseBrowserTTSOptions {
   rate?: number; // 0.1 to 10
   pitch?: number; // 0 to 2
   volume?: number; // 0 to 1
-  lang?: string; // e.g., 'zh-CN', 'en-US'
+  lang?: string;
 }
 
 export function useBrowserTTS(options: UseBrowserTTSOptions = {}) {
-  const {
-    onStart,
-    onEnd,
-    onError,
-    rate = 1.0,
-    pitch = 1.0,
-    volume = 1.0,
-    lang = 'zh-CN',
-  } = options;
+  const { onStart, onEnd, onError, rate = 1.0, pitch = 1.0, volume = 1.0, lang } = options;
 
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -62,7 +59,7 @@ export function useBrowserTTS(options: UseBrowserTTSOptions = {}) {
   const speak = useCallback(
     (text: string, voiceURI?: string) => {
       if (typeof window === 'undefined' || !window.speechSynthesis) {
-        onError?.('浏览器不支持 Web Speech API');
+        onError?.('Browser does not support the Web Speech API');
         return;
       }
 
@@ -73,14 +70,23 @@ export function useBrowserTTS(options: UseBrowserTTSOptions = {}) {
       utterance.rate = rate;
       utterance.pitch = pitch;
       utterance.volume = volume;
-      utterance.lang = lang;
+      utterance.lang = lang ? normalizeClassroomLanguage(lang) : defaultClassroomLanguage;
 
       // Set voice if specified
       if (voiceURI) {
-        const voice = availableVoices.find((v) => v.voiceURI === voiceURI);
+        const voice = availableVoices.find(
+          (v) => v.voiceURI === voiceURI || v.name === voiceURI || v.lang === voiceURI,
+        );
         if (voice) {
           utterance.voice = voice;
+          utterance.lang = voice.lang;
+        } else if (!lang) {
+          utterance.lang = inferSpeechLanguageFromText(text);
         }
+      } else {
+        utterance.lang = lang
+          ? normalizeClassroomLanguage(lang)
+          : inferSpeechLanguageFromText(text);
       }
 
       utterance.onstart = () => {

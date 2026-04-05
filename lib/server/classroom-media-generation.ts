@@ -12,7 +12,7 @@ import { CLASSROOMS_DIR } from '@/lib/server/classroom-storage';
 import { generateImage } from '@/lib/media/image-providers';
 import { generateVideo, normalizeVideoOptions } from '@/lib/media/video-providers';
 import { generateTTS } from '@/lib/audio/tts-providers';
-import { DEFAULT_TTS_VOICES, DEFAULT_TTS_MODELS, TTS_PROVIDERS } from '@/lib/audio/constants';
+import { DEFAULT_TTS_MODELS, TTS_PROVIDERS, getDefaultTTSVoice } from '@/lib/audio/constants';
 import { IMAGE_PROVIDERS } from '@/lib/media/image-providers';
 import { VIDEO_PROVIDERS } from '@/lib/media/video-providers';
 import { isMediaPlaceholder } from '@/lib/store/media-generation';
@@ -205,6 +205,7 @@ export async function generateTTSForClassroom(
   scenes: Scene[],
   classroomId: string,
   baseUrl: string,
+  classroomLanguage?: string,
 ): Promise<void> {
   const audioDir = path.join(CLASSROOMS_DIR, classroomId, 'audio');
   await ensureDir(audioDir);
@@ -225,7 +226,7 @@ export async function generateTTSForClassroom(
     return;
   }
   const ttsBaseUrl = resolveTTSBaseUrl(providerId) || TTS_PROVIDERS[providerId]?.defaultBaseUrl;
-  const voice = DEFAULT_TTS_VOICES[providerId] || 'default';
+  const voice = getDefaultTTSVoice(providerId, classroomLanguage);
   const format = TTS_PROVIDERS[providerId]?.supportedFormats?.[0] || 'mp3';
 
   for (const scene of scenes) {

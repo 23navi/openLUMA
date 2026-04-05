@@ -22,6 +22,7 @@ import type { LanguageModel } from 'ai';
 import type { StageStore } from '@/lib/api/stage-api';
 import { createStageAPI } from '@/lib/api/stage-api';
 import { generatePBLContent } from '@/lib/pbl/generate-pbl';
+import { defaultClassroomLanguage, type ClassroomLanguage } from '@/lib/classroom-languages';
 import { buildPrompt, PROMPT_IDS } from './prompts';
 import { postProcessInteractiveHtml } from './interactive-post-processor';
 import { parseActionsFromStructuredOutput } from './action-parser';
@@ -467,7 +468,7 @@ async function generateSlideContent(
   generatedMediaMapping?: ImageMapping,
   agents?: AgentInfo[],
 ): Promise<GeneratedSlideContent | null> {
-  const lang = outline.language || 'zh-CN';
+  const lang = outline.language || defaultClassroomLanguage;
 
   // Build assigned images description for the prompt
   let assignedImagesText = '无可用图片，禁止插入任何 image 元素';
@@ -735,7 +736,7 @@ function normalizeQuizAnswer(question: Record<string, unknown>): string[] | unde
 async function generateInteractiveContent(
   outline: SceneOutline,
   aiCall: AICallFn,
-  language: 'zh-CN' | 'en-US' = 'zh-CN',
+  language: ClassroomLanguage = defaultClassroomLanguage,
 ): Promise<GeneratedInteractiveContent | null> {
   const config = outline.interactiveConfig!;
 

@@ -12,6 +12,7 @@ import { createLogger } from '@/lib/logger';
 import { apiError, apiSuccess } from '@/lib/server/api-response';
 import { resolveModelFromHeaders } from '@/lib/server/resolve-model';
 import { AGENT_COLOR_PALETTE } from '@/lib/constants/agent-defaults';
+import { getClassroomLanguagePromptName } from '@/lib/classroom-languages';
 
 const log = createLogger('Agent Profiles API');
 
@@ -77,6 +78,7 @@ export async function POST(req: NextRequest) {
       : null;
 
     const systemPrompt = `You are an expert instructional designer. Generate agent profiles for a multi-agent classroom simulation. Decide the appropriate number of agents (typically 3-5) based on the course content and complexity. Return ONLY valid JSON, no markdown or explanation.`;
+    const languageName = getClassroomLanguagePromptName(language);
 
     // Build voice list for prompt (if available)
     const voiceListStr =
@@ -109,7 +111,7 @@ Requirements:
 - Exactly 1 agent must have role "teacher", the rest can be "assistant" or "student"
 - Priority values: teacher=10 (highest), assistant=7, student=4-6
 - Each agent needs: name, role, persona (2-3 sentences describing personality and teaching/learning style)
-- Names and personas must be in language: ${language}
+- Names and personas must be in ${languageName}
 - Each agent must be assigned one avatar from this list: ${JSON.stringify(avatarDescriptions && avatarDescriptions.length > 0 ? avatarDescriptions.map((a) => ({ path: a.path, description: a.desc })) : availableAvatars)}
   - Pick an avatar that visually matches the agent's personality and role
   - Try to use different avatars for each agent

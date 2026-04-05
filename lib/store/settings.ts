@@ -9,7 +9,15 @@ import type { ProviderId } from '@/lib/ai/providers';
 import type { ProvidersConfig } from '@/lib/types/settings';
 import { PROVIDERS } from '@/lib/ai/providers';
 import type { TTSProviderId, ASRProviderId } from '@/lib/audio/types';
-import { ASR_PROVIDERS, DEFAULT_TTS_VOICES, TTS_PROVIDERS } from '@/lib/audio/constants';
+import {
+  ASR_PROVIDERS,
+  DEFAULT_TTS_VOICES,
+  TTS_PROVIDERS,
+  getASRSupportedLanguages,
+  getTTSVoices,
+  hasVisibleASRLanguages,
+  hasVisibleTTSVoices,
+} from '@/lib/audio/constants';
 import { PDF_PROVIDERS } from '@/lib/pdf/constants';
 import type { PDFProviderId } from '@/lib/pdf/types';
 import type { ImageProviderId, VideoProviderId } from '@/lib/media/types';
@@ -281,7 +289,7 @@ const getDefaultAudioConfig = () => ({
   ttsVoice: 'default',
   ttsSpeed: 1.0,
   asrProviderId: 'browser-native' as ASRProviderId,
-  asrLanguage: 'zh',
+  asrLanguage: 'en-US',
   ttsProvidersConfig: {
     'openai-tts': { apiKey: '', baseUrl: '', enabled: true },
     'azure-tts': { apiKey: '', baseUrl: '', enabled: false },
@@ -381,12 +389,37 @@ function ensureValidProviderSelections(state: Partial<SettingsState>): void {
     state.videoProviderId = defaultVideoConfig.videoProviderId;
   }
 
-  if (!hasProviderId(TTS_PROVIDERS, state.ttsProviderId)) {
+  if (
+    !hasProviderId(TTS_PROVIDERS, state.ttsProviderId) ||
+    !hasVisibleTTSVoices(state.ttsProviderId as TTSProviderId)
+  ) {
     state.ttsProviderId = defaultAudioConfig.ttsProviderId;
   }
 
-  if (!hasProviderId(ASR_PROVIDERS, state.asrProviderId)) {
+  if (
+    !hasProviderId(ASR_PROVIDERS, state.asrProviderId) ||
+    !hasVisibleASRLanguages(state.asrProviderId as ASRProviderId)
+  ) {
     state.asrProviderId = defaultAudioConfig.asrProviderId;
+  }
+
+  const ttsProviderId = state.ttsProviderId as TTSProviderId | undefined;
+  if (ttsProviderId) {
+    const visibleVoices = getTTSVoices(ttsProviderId);
+    if (
+      ttsProviderId !== 'browser-native-tts' &&
+      (!state.ttsVoice || !visibleVoices.some((voice) => voice.id === state.ttsVoice))
+    ) {
+      state.ttsVoice = DEFAULT_TTS_VOICES[ttsProviderId] || visibleVoices[0]?.id || 'default';
+    }
+  }
+
+  const asrProviderId = state.asrProviderId as ASRProviderId | undefined;
+  if (asrProviderId) {
+    const supportedLanguages = getASRSupportedLanguages(asrProviderId);
+    if (!state.asrLanguage || !supportedLanguages.includes(state.asrLanguage)) {
+      state.asrLanguage = supportedLanguages[0] || defaultAudioConfig.asrLanguage;
+    }
   }
 }
 
@@ -961,18 +994,28 @@ export const useSettingsStore = create<SettingsState>()(
                 newProvidersConfig,
                 llmFallback,
               );
-              const validTTSProvider = validateProvider(
+              let validTTSProvider = validateProvider(
                 state.ttsProviderId,
                 newTTSConfig,
                 ttsFallback,
                 'browser-native-tts' as TTSProviderId,
               );
-              const validASRProvider = validateProvider(
+              let validASRProvider = validateProvider(
                 state.asrProviderId,
                 newASRConfig,
                 asrFallback,
                 'browser-native' as ASRProviderId,
               );
+              if (validTTSProvider && !hasVisibleTTSVoices(validTTSProvider as TTSProviderId)) {
+                validTTSProvider =
+                  ttsFallback.find((id) => hasVisibleTTSVoices(id as TTSProviderId)) ||
+                  ('browser-native-tts' as TTSProviderId);
+              }
+              if (validASRProvider && !hasVisibleASRLanguages(validASRProvider as ASRProviderId)) {
+                validASRProvider =
+                  asrFallback.find((id) => hasVisibleASRLanguages(id as ASRProviderId)) ||
+                  ('browser-native' as ASRProviderId);
+              }
               const validPDFProvider = validateProvider(
                 state.pdfProviderId,
                 newPDFConfig,
@@ -1028,10 +1071,22 @@ export const useSettingsStore = create<SettingsState>()(
                   ''
                 : '';
 
+              const validTTSVoices = validTTSProvider
+                ? getTTSVoices(validTTSProvider as TTSProviderId)
+                : [];
               const validTTSVoice =
-                validTTSProvider !== state.ttsProviderId
-                  ? DEFAULT_TTS_VOICES[validTTSProvider as TTSProviderId] || 'default'
+                validTTSProvider !== state.ttsProviderId ||
+                !validTTSVoices.some((voice) => voice.id === state.ttsVoice)
+                  ? DEFAULT_TTS_VOICES[validTTSProvider as TTSProviderId] ||
+                    validTTSVoices[0]?.id ||
+                    'default'
                   : state.ttsVoice;
+              const validASRLanguages = validASRProvider
+                ? getASRSupportedLanguages(validASRProvider as ASRProviderId)
+                : [];
+              const validASRLanguage = validASRLanguages.includes(state.asrLanguage)
+                ? state.asrLanguage
+                : validASRLanguages[0] || 'en-US';
 
               // Auto-disable image/video generation when no provider is usable
               const shouldDisableImage = !validImageProvider && state.imageGenerationEnabled;
@@ -1056,17 +1111,24 @@ export const useSettingsStore = create<SettingsState>()(
                 }
 
                 // TTS: select first server provider if current is not server-configured
-                const serverTtsIds = Object.keys(data.tts) as TTSProviderId[];
+                const serverTtsIds = (Object.keys(data.tts) as TTSProviderId[]).filter((id) =>
+                  hasVisibleTTSVoices(id),
+                );
                 if (
                   serverTtsIds.length > 0 &&
                   !newTTSConfig[state.ttsProviderId]?.isServerConfigured
                 ) {
                   autoTtsProvider = serverTtsIds[0];
-                  autoTtsVoice = DEFAULT_TTS_VOICES[autoTtsProvider] || 'default';
+                  autoTtsVoice =
+                    DEFAULT_TTS_VOICES[autoTtsProvider] ||
+                    getTTSVoices(autoTtsProvider)[0]?.id ||
+                    'default';
                 }
 
                 // ASR: select first server provider if current is not server-configured
-                const serverAsrIds = Object.keys(data.asr) as ASRProviderId[];
+                const serverAsrIds = (Object.keys(data.asr) as ASRProviderId[]).filter((id) =>
+                  hasVisibleASRLanguages(id),
+                );
                 if (
                   serverAsrIds.length > 0 &&
                   !newASRConfig[state.asrProviderId]?.isServerConfigured
@@ -1144,6 +1206,10 @@ export const useSettingsStore = create<SettingsState>()(
                 ...(validASRProvider !== state.asrProviderId && {
                   asrProviderId: validASRProvider as ASRProviderId,
                 }),
+                ...((validASRProvider !== state.asrProviderId ||
+                  validASRLanguage !== state.asrLanguage) && {
+                  asrLanguage: validASRLanguage,
+                }),
                 ...(validPDFProvider !== state.pdfProviderId && {
                   pdfProviderId: validPDFProvider as PDFProviderId,
                 }),
@@ -1169,7 +1235,10 @@ export const useSettingsStore = create<SettingsState>()(
                   ttsProviderId: autoTtsProvider,
                   ttsVoice: autoTtsVoice,
                 }),
-                ...(autoAsrProvider && { asrProviderId: autoAsrProvider }),
+                ...(autoAsrProvider && {
+                  asrProviderId: autoAsrProvider,
+                  asrLanguage: getASRSupportedLanguages(autoAsrProvider)[0] || 'en-US',
+                }),
                 ...(autoImageProvider && {
                   imageProviderId: autoImageProvider,
                 }),

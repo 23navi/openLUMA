@@ -94,6 +94,7 @@
 
 import type { TTSModelConfig } from './types';
 import { TTS_PROVIDERS } from './constants';
+import { isChineseLanguage } from '@/lib/classroom-languages';
 
 /**
  * Result of TTS generation
@@ -211,12 +212,13 @@ async function generateAzureTTS(
   text: string,
 ): Promise<TTSGenerationResult> {
   const baseUrl = config.baseUrl || TTS_PROVIDERS['azure-tts'].defaultBaseUrl;
+  const locale = config.voice.match(/^[a-z]{2,3}-[A-Z]{2}/)?.[0] || 'en-US';
 
   // Build SSML
   const rate = config.speed ? `${((config.speed - 1) * 100).toFixed(0)}%` : '0%';
   const ssml = `
-    <speak version='1.0' xml:lang='zh-CN'>
-      <voice xml:lang='zh-CN' name='${config.voice}'>
+    <speak version='1.0' xml:lang='${locale}'>
+      <voice xml:lang='${locale}' name='${config.voice}'>
         <prosody rate='${rate}'>${escapeXml(text)}</prosody>
       </voice>
     </speak>
@@ -291,6 +293,9 @@ async function generateGLMTTS(config: TTSModelConfig, text: string): Promise<TTS
  */
 async function generateQwenTTS(config: TTSModelConfig, text: string): Promise<TTSGenerationResult> {
   const baseUrl = config.baseUrl || TTS_PROVIDERS['qwen-tts'].defaultBaseUrl;
+  const selectedVoice = TTS_PROVIDERS['qwen-tts'].voices.find((voice) => voice.id === config.voice);
+  const languageType =
+    selectedVoice && isChineseLanguage(selectedVoice.language) ? 'Chinese' : undefined;
 
   // Calculate speed: Qwen3 uses rate parameter from -500 to 500
   // speed 1.0 = rate 0, speed 2.0 = rate 500, speed 0.5 = rate -250
@@ -307,7 +312,7 @@ async function generateQwenTTS(config: TTSModelConfig, text: string): Promise<TT
       input: {
         text,
         voice: config.voice,
-        language_type: 'Chinese', // Default to Chinese, can be made configurable
+        ...(languageType ? { language_type: languageType } : {}),
       },
       parameters: {
         rate, // Speech rate from -500 to 500

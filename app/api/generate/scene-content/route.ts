@@ -18,6 +18,7 @@ import type { SceneOutline, PdfImage, ImageMapping } from '@/lib/types/generatio
 import { createLogger } from '@/lib/logger';
 import { apiError, apiSuccess } from '@/lib/server/api-response';
 import { resolveModelFromHeaders } from '@/lib/server/resolve-model';
+import { defaultClassroomLanguage, normalizeClassroomLanguage } from '@/lib/classroom-languages';
 
 const log = createLogger('Scene Content API');
 
@@ -69,7 +70,9 @@ export async function POST(req: NextRequest) {
     // Ensure outline has language from stageInfo (fallback for older outlines)
     const outline: SceneOutline = {
       ...rawOutline,
-      language: rawOutline.language || (stageInfo?.language as 'zh-CN' | 'en-US') || 'zh-CN',
+      language: normalizeClassroomLanguage(
+        rawOutline.language || stageInfo?.language || defaultClassroomLanguage,
+      ),
     };
 
     // ── Model resolution from request headers ──

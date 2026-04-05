@@ -16,7 +16,9 @@ import { useI18n } from '@/lib/hooks/use-i18n';
 import { useSettingsStore } from '@/lib/store/settings';
 import {
   TTS_PROVIDERS,
+  DEFAULT_TTS_VOICES,
   getTTSVoices,
+  hasVisibleTTSVoices,
   ASR_PROVIDERS,
   getASRSupportedLanguages,
 } from '@/lib/audio/constants';
@@ -25,6 +27,7 @@ import { Volume2, Mic, MicOff, CheckCircle2, XCircle, Eye, EyeOff } from 'lucide
 import { cn } from '@/lib/utils';
 import azureVoicesData from '@/lib/audio/azure.json';
 import { createLogger } from '@/lib/logger';
+import { defaultClassroomLanguage, isChineseLanguage } from '@/lib/classroom-languages';
 
 const log = createLogger('AudioSettings');
 
@@ -92,7 +95,10 @@ export function AudioSettings({ onSave }: AudioSettingsProps = {}) {
   const ttsProvider = TTS_PROVIDERS[ttsProviderId] ?? TTS_PROVIDERS['openai-tts'];
 
   // Azure voices - load from static JSON
-  const azureVoices = useMemo(() => azureVoicesData.voices, []);
+  const azureVoices = useMemo(
+    () => azureVoicesData.voices.filter((voice) => !isChineseLanguage(voice.Locale)),
+    [],
+  );
 
   // Wrapped setters that trigger onSave callback
   const handleTTSProviderChange = (providerId: TTSProviderId) => {
@@ -211,12 +217,12 @@ export function AudioSettings({ onSave }: AudioSettingsProps = {}) {
     if (availableVoices.length > 0) {
       // Initialize default voice if not set
       if (!ttsVoice) {
-        setTTSVoice(availableVoices[0].id);
+        setTTSVoice(DEFAULT_TTS_VOICES[ttsProviderId] || availableVoices[0].id);
       } else {
         // Check if current voice is available in new provider
         const currentVoiceExists = availableVoices.some((v) => v.id === ttsVoice);
         if (!currentVoiceExists) {
-          setTTSVoice(availableVoices[0].id);
+          setTTSVoice(DEFAULT_TTS_VOICES[ttsProviderId] || availableVoices[0].id);
         }
       }
     }
@@ -278,7 +284,7 @@ export function AudioSettings({ onSave }: AudioSettingsProps = {}) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Vendor-prefixed API without standard typings
         const recognition = new (SpeechRecognitionCtor as new () => any)();
-        recognition.lang = asrLanguage || 'zh-CN';
+        recognition.lang = asrLanguage || defaultClassroomLanguage;
         recognition.onresult = (event: {
           results: {
             [index: number]: { [index: number]: { transcript: string } };
@@ -432,21 +438,25 @@ export function AudioSettings({ onSave }: AudioSettingsProps = {}) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {Object.values(TTS_PROVIDERS).map((provider) => (
-                  <SelectItem key={provider.id} value={provider.id}>
-                    <div className="flex items-center gap-2">
-                      {provider.icon && (
-                        <img src={provider.icon} alt={provider.name} className="w-4 h-4" />
-                      )}
-                      {getTTSProviderName(provider.id, t)}
-                      {ttsProvidersConfig[provider.id]?.isServerConfigured && (
-                        <span className="text-[10px] px-1 py-0.5 rounded border text-muted-foreground">
-                          {t('settings.serverConfigured')}
-                        </span>
-                      )}
-                    </div>
-                  </SelectItem>
-                ))}
+                {Object.values(TTS_PROVIDERS)
+                  .filter(
+                    (provider) => provider.id === ttsProviderId || hasVisibleTTSVoices(provider.id),
+                  )
+                  .map((provider) => (
+                    <SelectItem key={provider.id} value={provider.id}>
+                      <div className="flex items-center gap-2">
+                        {provider.icon && (
+                          <img src={provider.icon} alt={provider.name} className="w-4 h-4" />
+                        )}
+                        {getTTSProviderName(provider.id, t)}
+                        {ttsProvidersConfig[provider.id]?.isServerConfigured && (
+                          <span className="text-[10px] px-1 py-0.5 rounded border text-muted-foreground">
+                            {t('settings.serverConfigured')}
+                          </span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>

@@ -25,6 +25,7 @@ import { MAX_PDF_CONTENT_CHARS, MAX_VISION_IMAGES } from '@/lib/constants/genera
 import { nanoid } from 'nanoid';
 import type { Stage } from '@/lib/types/stage';
 import type { SceneOutline, PdfImage, ImageMapping } from '@/lib/types/generation';
+import { defaultClassroomLanguage } from '@/lib/classroom-languages';
 import { AgentRevealModal } from '@/components/agent/agent-reveal-modal';
 import { createLogger } from '@/lib/logger';
 import { type GenerationSessionState, ALL_STEPS, getActiveSteps } from './types';
@@ -365,7 +366,7 @@ function GenerationPreviewContent() {
         id: stageId,
         name: extractTopicFromRequirement(currentSession.requirements.requirement),
         description: '',
-        language: currentSession.requirements.language || 'zh-CN',
+        language: currentSession.requirements.language || defaultClassroomLanguage,
         style: 'professional',
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -444,7 +445,7 @@ function GenerationPreviewContent() {
             headers: getApiHeaders(),
             body: JSON.stringify({
               stageInfo: { name: stage.name, description: stage.description },
-              language: currentSession.requirements.language || 'zh-CN',
+              language: currentSession.requirements.language || defaultClassroomLanguage,
               availableAvatars: allAvatars.map((a) => a.path),
               avatarDescriptions: allAvatars.map((a) => ({ path: a.path, desc: a.desc })),
               availableVoices: getAvailableVoicesForGeneration(),

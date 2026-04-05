@@ -33,6 +33,11 @@ import type {
 import { apiError } from '@/lib/server/api-response';
 import { createLogger } from '@/lib/logger';
 import { resolveModelFromHeaders } from '@/lib/server/resolve-model';
+import {
+  getClassroomLanguagePromptName,
+  getNoImagesAvailableText,
+  getNoneText,
+} from '@/lib/classroom-languages';
 const log = createLogger('Outlines Stream');
 
 export const maxDuration = 300;
@@ -124,8 +129,7 @@ export async function POST(req: NextRequest) {
     const hasVision = !!modelInfo?.capabilities?.vision;
 
     // Build prompt (same logic as generateSceneOutlinesFromRequirements)
-    let availableImagesText =
-      requirements.language === 'zh-CN' ? '无可用图片' : 'No images available';
+    let availableImagesText = getNoImagesAvailableText(requirements.language);
     let visionImages: Array<{ id: string; src: string }> | undefined;
 
     if (pdfImages && pdfImages.length > 0) {
@@ -179,13 +183,12 @@ export async function POST(req: NextRequest) {
     const prompts = buildPrompt(PROMPT_IDS.REQUIREMENTS_TO_OUTLINES, {
       requirement: requirements.requirement,
       language: requirements.language,
+      languageName: getClassroomLanguagePromptName(requirements.language),
       pdfContent: pdfText
         ? pdfText.substring(0, MAX_PDF_CONTENT_CHARS)
-        : requirements.language === 'zh-CN'
-          ? '无'
-          : 'None',
+        : getNoneText(requirements.language),
       availableImages: availableImagesText,
-      researchContext: researchContext || (requirements.language === 'zh-CN' ? '无' : 'None'),
+      researchContext: researchContext || getNoneText(requirements.language),
       mediaGenerationPolicy,
       teacherContext,
     });

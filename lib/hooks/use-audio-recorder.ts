@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { ASR_PROVIDERS } from '@/lib/audio/constants';
 import { createLogger } from '@/lib/logger';
+import { defaultClassroomLanguage } from '@/lib/classroom-languages';
 
 const log = createLogger('AudioRecorder');
 
@@ -82,7 +83,9 @@ export function useAudioRecorder(options: UseAudioRecorderOptions = {}) {
         onTranscription?.(result.text);
       } catch (error) {
         log.error('Transcription error:', error);
-        onError?.(error instanceof Error ? error.message : '语音识别失败，请重试');
+        onError?.(
+          error instanceof Error ? error.message : 'Speech recognition failed. Please try again.',
+        );
       } finally {
         setIsProcessing(false);
         setRecordingTime(0);
@@ -106,14 +109,14 @@ export function useAudioRecorder(options: UseAudioRecorderOptions = {}) {
         if (asrProviderId === 'browser-native') {
           // Check if Speech Recognition is supported
           if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-            onError?.('您的浏览器不支持语音识别功能');
+            onError?.('Your browser does not support speech recognition.');
             return;
           }
 
           const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
           const recognition = new SpeechRecognition();
 
-          recognition.lang = asrLanguage || 'zh-CN';
+          recognition.lang = asrLanguage || defaultClassroomLanguage;
           recognition.continuous = false;
           recognition.interimResults = false;
 
@@ -138,7 +141,7 @@ export function useAudioRecorder(options: UseAudioRecorderOptions = {}) {
 
           recognition.onerror = (event: { error: string }) => {
             log.error('Speech recognition error:', event.error);
-            let errorMessage = '语音识别失败';
+            let errorMessage = 'Speech recognition failed.';
 
             switch (event.error) {
               case 'aborted':
@@ -152,19 +155,19 @@ export function useAudioRecorder(options: UseAudioRecorderOptions = {}) {
                 }
                 return;
               case 'no-speech':
-                errorMessage = '未检测到语音输入';
+                errorMessage = 'No speech was detected.';
                 break;
               case 'audio-capture':
-                errorMessage = '无法访问麦克风';
+                errorMessage = 'Unable to access the microphone.';
                 break;
               case 'not-allowed':
-                errorMessage = '麦克风权限被拒绝';
+                errorMessage = 'Microphone permission was denied.';
                 break;
               case 'network':
-                errorMessage = '网络错误';
+                errorMessage = 'A network error occurred.';
                 break;
               default:
-                errorMessage = `语音识别错误: ${event.error}`;
+                errorMessage = `Speech recognition error: ${event.error}`;
             }
 
             onError?.(errorMessage);
@@ -237,7 +240,7 @@ export function useAudioRecorder(options: UseAudioRecorderOptions = {}) {
     } catch (error) {
       busyRef.current = false;
       log.error('Failed to start recording:', error);
-      onError?.('无法访问麦克风，请检查权限设置');
+      onError?.('Unable to access the microphone. Please check your permissions.');
     }
   }, [onTranscription, onError, transcribeAudio]);
 

@@ -18,6 +18,7 @@ import type { ASRProviderId } from '@/lib/audio/types';
 import { Mic, MicOff, CheckCircle2, XCircle, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
+import { defaultClassroomLanguage } from '@/lib/classroom-languages';
 
 const log = createLogger('ASRSettings');
 
@@ -74,7 +75,7 @@ export function ASRSettings({ selectedProviderId }: ASRSettingsProps) {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Vendor-prefixed API without standard typings
         const recognition = new (SpeechRecognitionCtor as new () => any)();
-        recognition.lang = asrLanguage || 'zh-CN';
+        recognition.lang = asrLanguage || defaultClassroomLanguage;
         recognition.onresult = (event: {
           results: {
             [index: number]: { [index: number]: { transcript: string } };
