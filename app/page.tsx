@@ -54,6 +54,8 @@ import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useDraftCache } from '@/lib/hooks/use-draft-cache';
 import { SpeechButton } from '@/components/audio/speech-button';
+import { APP_FOOTER } from '@/lib/branding';
+import { OpenLumaLogo } from '@/components/branding/openluma-logo';
 
 const log = createLogger('Home');
 
@@ -335,11 +337,11 @@ function HomePage() {
   };
 
   return (
-    <div className="min-h-[100dvh] w-full bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 flex flex-col items-center p-4 pt-16 md:p-8 md:pt-16 overflow-x-hidden">
+    <div className="relative flex min-h-[100dvh] w-full flex-col items-center overflow-x-hidden p-4 pt-16 md:p-8 md:pt-16">
       {/* ═══ Top-right pill (unchanged) ═══ */}
       <div
         ref={toolbarRef}
-        className="fixed top-4 right-4 z-50 flex items-center gap-1 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md px-2 py-1.5 rounded-full border border-gray-100/50 dark:border-gray-700/50 shadow-sm"
+        className="fixed top-4 right-4 z-50 flex items-center gap-1 rounded-full border border-white/60 bg-white/68 px-2 py-1.5 shadow-[0_18px_48px_-28px_rgba(16,34,49,0.65)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/65"
       >
         {/* Language Selector */}
         <LanguageSwitcher onOpen={() => setThemeOpen(false)} />
@@ -367,8 +369,7 @@ function HomePage() {
                 }}
                 className={cn(
                   'w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2',
-                  theme === 'light' &&
-                    'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+                  theme === 'light' && 'bg-primary/10 dark:bg-primary/20 text-primary',
                 )}
               >
                 <Sun className="w-4 h-4" />
@@ -381,8 +382,7 @@ function HomePage() {
                 }}
                 className={cn(
                   'w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2',
-                  theme === 'dark' &&
-                    'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+                  theme === 'dark' && 'bg-primary/10 dark:bg-primary/20 text-primary',
                 )}
               >
                 <Moon className="w-4 h-4" />
@@ -395,8 +395,7 @@ function HomePage() {
                 }}
                 className={cn(
                   'w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2',
-                  theme === 'system' &&
-                    'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+                  theme === 'system' && 'bg-primary/10 dark:bg-primary/20 text-primary',
                 )}
               >
                 <Monitor className="w-4 h-4" />
@@ -430,13 +429,14 @@ function HomePage() {
       {/* ═══ Background Decor ═══ */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
-          className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
+          className="absolute left-[12%] top-[4%] h-[24rem] w-[24rem] rounded-full bg-teal-300/24 blur-3xl animate-pulse dark:bg-teal-400/12"
           style={{ animationDuration: '4s' }}
         />
         <div
-          className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"
+          className="absolute bottom-[4%] right-[10%] h-[22rem] w-[22rem] rounded-full bg-amber-300/22 blur-3xl animate-pulse dark:bg-amber-400/12"
           style={{ animationDuration: '6s' }}
         />
+        <div className="absolute left-1/2 top-24 h-28 w-[34rem] -translate-x-1/2 rounded-full bg-white/55 blur-3xl dark:bg-white/6" />
       </div>
 
       {/* ═══ Hero section: title + input (centered, wider) ═══ */}
@@ -449,10 +449,7 @@ function HomePage() {
           classrooms.length === 0 ? 'justify-center min-h-[calc(100dvh-8rem)]' : 'mt-[10vh]',
         )}
       >
-        {/* ── Logo ── */}
-        <motion.img
-          src="/logo-horizontal.png"
-          alt="OpenMAIC"
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{
@@ -461,15 +458,17 @@ function HomePage() {
             stiffness: 200,
             damping: 20,
           }}
-          className="h-12 md:h-16 mb-2 -ml-2 md:-ml-3"
-        />
+          className="mb-3"
+        >
+          <OpenLumaLogo size="lg" />
+        </motion.div>
 
         {/* ── Slogan ── */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.25 }}
-          className="text-sm text-muted-foreground/60 mb-8"
+          className="mb-8 text-sm text-muted-foreground/70"
         >
           {t('home.slogan')}
         </motion.p>
@@ -481,7 +480,7 @@ function HomePage() {
           transition={{ delay: 0.35 }}
           className="w-full"
         >
-          <div className="w-full rounded-2xl border border-border/60 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-xl shadow-black/[0.03] dark:shadow-black/20 transition-shadow focus-within:shadow-2xl focus-within:shadow-violet-500/[0.06]">
+          <div className="w-full rounded-[1.6rem] border border-white/70 bg-white/72 shadow-[0_30px_70px_-32px_rgba(16,34,49,0.42)] backdrop-blur-2xl transition-shadow focus-within:shadow-[0_36px_84px_-28px_rgba(18,122,132,0.25)] dark:border-white/8 dark:bg-slate-950/62 dark:shadow-[0_32px_84px_-34px_rgba(4,12,16,0.78)]">
             {/* ── Greeting + Profile + Agents ── */}
             <div className="relative z-20 flex items-start justify-between">
               <GreetingBar />
@@ -643,8 +642,8 @@ function HomePage() {
       )}
 
       {/* Footer — flows with content, at the very end */}
-      <div className="mt-auto pt-12 pb-4 text-center text-xs text-muted-foreground/40">
-        OpenMAIC Open Source Project
+      <div className="mt-auto pt-12 pb-4 text-center text-xs font-medium tracking-[0.18em] text-muted-foreground/55 uppercase">
+        {APP_FOOTER}
       </div>
     </div>
   );
@@ -749,7 +748,7 @@ function GreetingBar() {
           onClick={() => setOpen(true)}
         >
           <div className="shrink-0 relative">
-            <div className="size-8 rounded-full overflow-hidden ring-[1.5px] ring-border/30 group-hover:ring-violet-400/60 dark:group-hover:ring-violet-400/40 transition-all duration-300">
+            <div className="size-8 rounded-full overflow-hidden ring-[1.5px] ring-border/30 transition-all duration-300 group-hover:ring-primary/55 dark:group-hover:ring-primary/35">
               <img src={avatar} alt="" className="size-full object-cover" />
             </div>
             <div className="absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full bg-white dark:bg-slate-800 border border-border/40 flex items-center justify-center opacity-60 group-hover:opacity-100 transition-opacity">
@@ -802,7 +801,7 @@ function GreetingBar() {
                     setAvatarPickerOpen(!avatarPickerOpen);
                   }}
                 >
-                  <div className="size-8 rounded-full overflow-hidden ring-[1.5px] ring-violet-300/70 dark:ring-violet-500/40 transition-all duration-300">
+                  <div className="size-8 rounded-full overflow-hidden ring-[1.5px] ring-primary/35 dark:ring-primary/28 transition-all duration-300">
                     <img src={avatar} alt="" className="size-full object-cover" />
                   </div>
                   <motion.div
@@ -840,7 +839,7 @@ function GreetingBar() {
                       />
                       <button
                         onClick={commitName}
-                        className="shrink-0 size-5 rounded flex items-center justify-center text-violet-500 hover:bg-violet-100 dark:hover:bg-violet-900/30"
+                        className="shrink-0 flex size-5 items-center justify-center rounded text-primary hover:bg-primary/10 dark:hover:bg-primary/18"
                       >
                         <Check className="size-3" />
                       </button>
@@ -892,7 +891,7 @@ function GreetingBar() {
                               'size-7 rounded-full overflow-hidden bg-gray-50 dark:bg-gray-800 cursor-pointer transition-all duration-150',
                               'hover:scale-110 active:scale-95',
                               avatar === url
-                                ? 'ring-2 ring-violet-400 dark:ring-violet-500 ring-offset-0'
+                                ? 'ring-2 ring-primary dark:ring-primary ring-offset-0'
                                 : 'hover:ring-1 hover:ring-muted-foreground/30',
                             )}
                           >
@@ -904,7 +903,7 @@ function GreetingBar() {
                             'size-7 rounded-full flex items-center justify-center cursor-pointer transition-all duration-150 border border-dashed',
                             'hover:scale-110 active:scale-95',
                             isCustomAvatar(avatar)
-                              ? 'ring-2 ring-violet-400 dark:ring-violet-500 ring-offset-0 border-violet-300 dark:border-violet-600 bg-violet-50 dark:bg-violet-900/30'
+                              ? 'ring-2 ring-primary dark:ring-primary ring-offset-0 border-primary/35 dark:border-primary/35 bg-primary/10 dark:bg-primary/16'
                               : 'border-muted-foreground/30 text-muted-foreground/50 hover:border-muted-foreground/50',
                           )}
                           onClick={() => avatarInputRef.current?.click()}
@@ -1009,7 +1008,7 @@ function ClassroomCard({
           />
         ) : !slide ? (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="size-12 rounded-2xl bg-gradient-to-br from-violet-100 to-blue-100 dark:from-violet-900/30 dark:to-blue-900/30 flex items-center justify-center">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-teal-100 dark:from-amber-900/20 dark:to-teal-900/20">
               <span className="text-xl opacity-50">📄</span>
             </div>
           </div>
@@ -1082,7 +1081,7 @@ function ClassroomCard({
 
       {/* Info — outside the thumbnail */}
       <div className="mt-2.5 px-1 flex items-center gap-2">
-        <span className="shrink-0 inline-flex items-center rounded-full bg-violet-100 dark:bg-violet-900/30 px-2 py-0.5 text-[11px] font-medium text-violet-600 dark:text-violet-400">
+        <span className="shrink-0 inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/18 px-2 py-0.5 text-[11px] font-medium text-primary dark:text-primary">
           {classroom.sceneCount} {t('classroom.slides')} · {formatDate(classroom.updatedAt)}
         </span>
         {editing ? (
@@ -1098,7 +1097,7 @@ function ClassroomCard({
               onBlur={commitRename}
               maxLength={100}
               placeholder={t('classroom.renamePlaceholder')}
-              className="w-full bg-transparent border-b border-violet-400/60 text-[15px] font-medium text-foreground/90 outline-none placeholder:text-muted-foreground/40"
+              className="w-full bg-transparent border-b border-primary/45 text-[15px] font-medium text-foreground/90 outline-none placeholder:text-muted-foreground/40"
             />
           </div>
         ) : (

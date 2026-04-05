@@ -94,7 +94,7 @@ export function Header({ currentSceneTitle }: HeaderProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md px-2 py-1.5 rounded-full border border-gray-100/50 dark:border-gray-700/50 shadow-sm shrink-0">
+        <div className="flex items-center gap-4 rounded-full border border-white/60 bg-white/65 px-2 py-1.5 shadow-[0_18px_48px_-28px_rgba(16,34,49,0.65)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/65 shrink-0">
           {/* Language Selector */}
           <LanguageSwitcher onOpen={() => setThemeOpen(false)} />
 
@@ -121,8 +121,7 @@ export function Header({ currentSceneTitle }: HeaderProps) {
                   }}
                   className={cn(
                     'w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2',
-                    theme === 'light' &&
-                      'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+                    theme === 'light' && 'bg-primary/10 dark:bg-primary/20 text-primary',
                   )}
                 >
                   <Sun className="w-4 h-4" />
@@ -135,8 +134,7 @@ export function Header({ currentSceneTitle }: HeaderProps) {
                   }}
                   className={cn(
                     'w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2',
-                    theme === 'dark' &&
-                      'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+                    theme === 'dark' && 'bg-primary/10 dark:bg-primary/20 text-primary',
                   )}
                 >
                   <Moon className="w-4 h-4" />
@@ -149,8 +147,7 @@ export function Header({ currentSceneTitle }: HeaderProps) {
                   }}
                   className={cn(
                     'w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2',
-                    theme === 'system' &&
-                      'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+                    theme === 'system' && 'bg-primary/10 dark:bg-primary/20 text-primary',
                   )}
                 >
                   <Monitor className="w-4 h-4" />

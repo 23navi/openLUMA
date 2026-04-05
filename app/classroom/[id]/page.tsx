@@ -182,13 +182,13 @@ export default function ClassroomDetailPage() {
       <MediaStageProvider value={classroomId}>
         <div className="h-screen flex flex-col overflow-hidden">
           {loading ? (
-            <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+            <div className="flex-1 flex items-center justify-center bg-transparent">
               <div className="text-center text-muted-foreground">
                 <p>Loading classroom...</p>
               </div>
             </div>
           ) : error ? (
-            <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+            <div className="flex-1 flex items-center justify-center bg-transparent">
               <div className="text-center">
                 <p className="text-destructive mb-4">Error: {error}</p>
                 <button

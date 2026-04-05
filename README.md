@@ -1,9 +1,9 @@
 <!-- <p align="center">
-  <img src="assets/logo-horizontal.png" alt="OpenMAIC" width="420"/>
+  <img src="assets/logo-horizontal.png" alt="openLUMA" width="420"/>
 </p> -->
 
 <p align="center">
-  <img src="assets/banner.png" alt="OpenMAIC Banner" width="680"/>
+  <img src="assets/banner.png" alt="openLUMA Banner" width="680"/>
 </p>
 
 <p align="center">
@@ -30,10 +30,11 @@
 </p>
 
 <p align="center">
-  <a href="./README.md">English</a> | <a href="./README-zh.md">简体中文</a>
-  <br/>
   <a href="https://open.maic.chat/">Live Demo</a> · <a href="#-quick-start">Quick Start</a> · <a href="#-features">Features</a> · <a href="#-use-cases">Use Cases</a> · <a href="#-openclaw-integration">OpenClaw</a>
 </p>
+
+> [!NOTE]
+> `openLUMA` is the new product name. Some external URLs, hosted endpoints, and OpenClaw skill/config IDs still use the legacy `openmaic` identifier until those downstream integrations are renamed.
 
 
 ## 🗞️ News
@@ -42,7 +43,7 @@
 
 ## 📖 Overview
 
-**OpenMAIC** (Open Multi-Agent Interactive Classroom) is an open-source AI platform that turns any topic or document into a rich, interactive classroom experience. Powered by multi-agent orchestration, it generates slides, quizzes, interactive simulations, and project-based learning activities — all delivered by AI teachers and AI classmates who can speak, draw on a whiteboard, and engage in real-time discussions with you. With built-in [OpenClaw](https://github.com/openclaw/openclaw) integration, you can generate classrooms directly from messaging apps like Feishu, Slack, or Telegram.
+**openLUMA** is an open-source AI classroom studio that turns any topic or document into a rich, interactive learning experience. Powered by multi-agent orchestration, it generates slides, quizzes, interactive simulations, and project-based learning activities — all delivered by AI teachers and AI classmates who can speak, draw on a whiteboard, and engage in real-time discussions with you. With built-in [OpenClaw](https://github.com/openclaw/openclaw) integration, you can generate classrooms directly from messaging apps like Feishu, Slack, or Telegram.
 
 https://github.com/user-attachments/assets/b4ab35ac-f994-46b1-8957-e82fe87ff0e9
 
@@ -58,11 +59,11 @@ https://github.com/user-attachments/assets/b4ab35ac-f994-46b1-8957-e82fe87ff0e9
 ---
 
 > [!TIP]
-> ### <img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/openclaw.png" height="28" align="top"/> OpenClaw — Use OpenMAIC from your chat app, zero setup
+> ### <img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/openclaw.png" height="28" align="top"/> OpenClaw — Use openLUMA from your chat app, zero setup
 >
-> With [OpenClaw](https://github.com/openclaw/openclaw), you can generate classrooms directly from Feishu, Slack, Discord, Telegram, and 20+ messaging apps.
+> With [OpenClaw](https://github.com/openclaw/openclaw), you can generate openLUMA classrooms directly from Feishu, Slack, Discord, Telegram, and 20+ messaging apps.
 >
-> 1. `clawhub install openmaic` or just ask your Claw *"install OpenMAIC skill"*
+> 1. `clawhub install openmaic` or just ask your Claw *"install openLUMA skill"* (the current skill ID is still `openmaic`)
 > 2. Pick a mode:
 >    - **Hosted mode** — Get an access code at [open.maic.chat](https://open.maic.chat/), no local setup needed
 >    - **Self-hosted** — The skill walks you through clone, config, and startup step by step
@@ -85,7 +86,7 @@ https://github.com/user-attachments/assets/b4ab35ac-f994-46b1-8957-e82fe87ff0e9
 
 ```bash
 git clone https://github.com/THU-MAIC/OpenMAIC.git
-cd OpenMAIC
+cd OpenMAIC # upstream repository still uses the legacy directory name
 pnpm install
 ```
 
@@ -135,7 +136,7 @@ VIDEO_MINIMAX_BASE_URL=https://api.minimaxi.com
 
 > **Recommended model:** **Gemini 3 Flash** — best balance of quality and speed. For highest quality (at slower speed), try **Gemini 3.1 Pro**.
 >
-> If you want OpenMAIC server APIs to use Gemini by default, also set `DEFAULT_MODEL=google:gemini-3-flash-preview`.
+> If you want openLUMA server APIs to use Gemini by default, also set `DEFAULT_MODEL=google:gemini-3-flash-preview`.
 >
 > If you want to use MiniMax as the default server model, set `DEFAULT_MODEL=minimax:MiniMax-M2.7-highspeed`.
 
@@ -184,7 +185,7 @@ Set `PDF_MINERU_BASE_URL` (and `PDF_MINERU_API_KEY` if needed) in `.env.local`.
 
 ### Lesson Generation
 
-Describe what you want to learn or attach reference materials. OpenMAIC's two-stage pipeline handles the rest:
+Describe what you want to learn or attach reference materials. openLUMA's two-stage pipeline handles the rest:
 
 | Stage | What Happens |
 |-------|-------------|
@@ -265,7 +266,7 @@ Choose a role and collaborate with AI agents on structured projects with milesto
 <tr>
 <td valign="top">
 
-OpenMAIC integrates with [OpenClaw](https://github.com/openclaw/openclaw) — a personal AI assistant that connects to messaging platforms you already use (Feishu, Slack, Discord, Telegram, WhatsApp, etc.). With this integration, you can **generate and view interactive classrooms directly from your chat app** without ever touching a terminal.
+openLUMA integrates with [OpenClaw](https://github.com/openclaw/openclaw) — a personal AI assistant that connects to messaging platforms you already use (Feishu, Slack, Discord, Telegram, WhatsApp, etc.). With this integration, you can **generate and view interactive classrooms directly from your chat app** without ever touching a terminal.
 
 </td>
 <td width="360" valign="top">
@@ -296,7 +297,7 @@ Or copy manually:
 
 ```bash
 mkdir -p ~/.openclaw/skills
-cp -R /path/to/OpenMAIC/skills/openmaic ~/.openclaw/skills/openmaic
+cp -R /path/to/openLUMA/skills/openmaic ~/.openclaw/skills/openmaic
 ```
 
 </td></tr></table>
@@ -322,7 +323,7 @@ Optional config in `~/.openclaw/openclaw.json`:
           // Hosted mode: paste your access code from open.maic.chat
           "accessCode": "sk-xxx",
           // Self-hosted mode: local repo path and URL
-          "repoDir": "/path/to/OpenMAIC",
+          "repoDir": "/path/to/openLUMA",
           "url": "http://localhost:3000"
         }
       }
@@ -396,7 +397,7 @@ We welcome contributions from the community! Whether it's bug reports, feature i
 ### Project Structure
 
 ```
-OpenMAIC/
+openLUMA/
 ├── app/                        # Next.js App Router
 │   ├── api/                    #   Server API routes (~18 endpoints)
 │   │   ├── generate/           #     Scene generation pipeline (outlines, content, images, TTS …)
@@ -441,7 +442,7 @@ OpenMAIC/
 │   └── mathml2omml/            #   MathML → Office Math conversion
 │
 ├── skills/                     # OpenClaw / ClawHub skills
-│   └── openmaic/               #   Guided OpenMAIC setup & generation SOP
+│   └── openmaic/               #   Guided openLUMA setup & generation SOP
 │       ├── SKILL.md            #   Thin router with confirmation rules
 │       └── references/         #   On-demand SOP sections
 │
@@ -474,7 +475,7 @@ This project is licensed under AGPL-3.0. For commercial licensing inquiries, ple
 
 ## 📝 Citation
 
-If you find OpenMAIC useful in your research, please consider citing:
+If you find openLUMA useful in your research, please consider citing:
 
 ```bibtex
 @Article{JCST-2509-16000,
@@ -502,4 +503,3 @@ If you find OpenMAIC useful in your research, please consider citing:
 ## 📄 License
 
 This project is licensed under the [GNU Affero General Public License v3.0](LICENSE).
-

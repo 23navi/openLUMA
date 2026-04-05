@@ -597,7 +597,7 @@ export function AgentBar() {
   const avatarRow = (
     <div className="flex items-center gap-1.5 shrink-0">
       {teacherAgent && (
-        <div className="size-8 rounded-full overflow-hidden ring-2 ring-blue-400/40 dark:ring-blue-500/30 shrink-0">
+        <div className="size-8 rounded-full overflow-hidden ring-2 ring-primary/35 dark:ring-primary/25 shrink-0">
           <img
             src={teacherAgent.avatar}
             alt={getAgentName(teacherAgent)}
@@ -619,7 +619,7 @@ export function AgentBar() {
               </div>
             )}
           </div>
-          <Shuffle className="size-4 text-violet-400 dark:text-violet-500" />
+          <Shuffle className="size-4 text-primary/70 dark:text-primary/80" />
         </>
       ) : (
         <>
@@ -799,9 +799,9 @@ export function AgentBar() {
               ) : (
                 <div className="flex flex-col items-center pt-6 pb-3 gap-4">
                   <div className="relative flex items-center justify-center">
-                    <div className="absolute size-10 rounded-full bg-violet-400/10 dark:bg-violet-400/15 animate-ping [animation-duration:3s]" />
-                    <div className="absolute size-12 rounded-full bg-violet-400/5 dark:bg-violet-400/10 animate-pulse [animation-duration:2.5s]" />
-                    <Shuffle className="relative size-5 text-violet-400 dark:text-violet-500" />
+                    <div className="absolute size-10 rounded-full bg-primary/10 dark:bg-primary/15 animate-ping [animation-duration:3s]" />
+                    <div className="absolute size-12 rounded-full bg-primary/5 dark:bg-primary/10 animate-pulse [animation-duration:2.5s]" />
+                    <Shuffle className="relative size-5 text-primary/75 dark:text-primary/85" />
                   </div>
                   <div className="flex-1" />
                   <div className="text-center space-y-1">

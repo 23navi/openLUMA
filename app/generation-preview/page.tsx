@@ -30,6 +30,7 @@ import { AgentRevealModal } from '@/components/agent/agent-reveal-modal';
 import { createLogger } from '@/lib/logger';
 import { type GenerationSessionState, ALL_STEPS, getActiveSteps } from './types';
 import { StepVisualizer } from './components/visualizers';
+import { OpenLumaLogo } from '@/components/branding/openluma-logo';
 
 const log = createLogger('GenerationPreview');
 
@@ -846,15 +847,15 @@ function GenerationPreviewContent() {
       : ALL_STEPS[0];
 
   return (
-    <div className="min-h-[100dvh] w-full bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 flex flex-col items-center justify-center p-4 relative overflow-hidden text-center">
+    <div className="relative flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden p-4 text-center">
       {/* Background Decor */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div
-          className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
+          className="absolute left-[12%] top-[6%] h-[24rem] w-[24rem] rounded-full bg-teal-300/24 blur-3xl animate-pulse dark:bg-teal-400/12"
           style={{ animationDuration: '4s' }}
         />
         <div
-          className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"
+          className="absolute bottom-[5%] right-[10%] h-[22rem] w-[22rem] rounded-full bg-amber-300/22 blur-3xl animate-pulse dark:bg-amber-400/12"
           style={{ animationDuration: '6s' }}
         />
       </div>
@@ -871,14 +872,22 @@ function GenerationPreviewContent() {
         </Button>
       </motion.div>
 
-      <div className="z-10 w-full max-w-lg space-y-8 flex flex-col items-center">
+      <div className="z-10 flex w-full max-w-lg flex-col items-center space-y-8">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.05 }}
+          className="rounded-full border border-white/65 bg-white/65 px-4 py-2 shadow-[0_20px_48px_-28px_rgba(16,34,49,0.55)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/60"
+        >
+          <OpenLumaLogo size="sm" />
+        </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="w-full"
         >
-          <Card className="relative overflow-hidden border-muted/40 shadow-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl min-h-[400px] flex flex-col items-center justify-center p-8 md:p-12">
+          <Card className="relative flex min-h-[400px] flex-col items-center justify-center overflow-hidden border-white/65 bg-white/74 p-8 shadow-[0_34px_80px_-34px_rgba(16,34,49,0.45)] backdrop-blur-2xl dark:border-white/8 dark:bg-slate-950/62 dark:shadow-[0_34px_84px_-34px_rgba(4,12,16,0.82)] md:p-12">
             {/* Progress Dots */}
             <div className="absolute top-6 left-0 right-0 flex justify-center gap-2">
               {activeSteps.map((step, idx) => (
@@ -887,9 +896,9 @@ function GenerationPreviewContent() {
                   className={cn(
                     'h-1.5 rounded-full transition-all duration-500',
                     idx < currentStepIndex
-                      ? 'w-1.5 bg-blue-500/30'
+                      ? 'w-1.5 bg-primary/25'
                       : idx === currentStepIndex
-                        ? 'w-8 bg-blue-500'
+                        ? 'w-8 bg-primary'
                         : 'w-1.5 bg-muted/50',
                   )}
                 />
@@ -1050,7 +1059,7 @@ function GenerationPreviewContent() {
                 {generatedAgents.length > 0 && !showAgentReveal && (
                   <button
                     onClick={() => setShowAgentReveal(true)}
-                    className="ml-2 flex items-center gap-1.5 rounded-full border border-purple-300/30 bg-purple-500/10 px-3 py-1 text-xs font-medium normal-case tracking-normal text-purple-400 transition-colors hover:bg-purple-500/20 hover:text-purple-300"
+                    className="ml-2 flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-medium normal-case tracking-normal text-primary transition-colors hover:bg-primary/18 hover:text-primary"
                   >
                     <Bot className="size-3" />
                     {t('generation.viewAgents')}
@@ -1080,7 +1089,7 @@ export default function GenerationPreviewPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[100dvh] w-full bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 flex items-center justify-center">
+        <div className="flex min-h-[100dvh] w-full items-center justify-center">
           <div className="animate-pulse space-y-4 text-center">
             <div className="h-8 w-48 bg-muted rounded mx-auto" />
             <div className="h-4 w-64 bg-muted rounded mx-auto" />

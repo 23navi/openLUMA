@@ -18,6 +18,7 @@ import { useStageStore, useCanvasStore } from '@/lib/store';
 import { useI18n } from '@/lib/hooks/use-i18n';
 import type { SceneType, SlideContent } from '@/lib/types/stage';
 import { PENDING_SCENE_ID } from '@/lib/store/stage';
+import { OpenLumaLogo } from '@/components/branding/openluma-logo';
 
 interface SceneSidebarProps {
   readonly collapsed: boolean;
@@ -106,15 +107,15 @@ export function SceneSidebar({
         width: displayWidth,
         transition: isDraggingRef.current ? 'none' : 'width 0.3s ease',
       }}
-      className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-gray-100 dark:border-gray-800 shadow-[2px_0_24px_rgba(0,0,0,0.02)] flex flex-col shrink-0 z-20 relative overflow-visible"
+      className="relative z-20 flex shrink-0 flex-col overflow-visible border-r border-white/55 bg-white/72 shadow-[2px_0_28px_rgba(15,35,50,0.08)] backdrop-blur-2xl dark:border-white/8 dark:bg-slate-950/70"
     >
       {/* Drag handle */}
       {!collapsed && (
         <div
           onMouseDown={handleDragStart}
-          className="absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize z-50 group hover:bg-purple-400/30 dark:hover:bg-purple-600/30 active:bg-purple-500/40 dark:active:bg-purple-500/40 transition-colors"
+          className="absolute right-0 top-0 bottom-0 z-50 w-1.5 cursor-col-resize transition-colors group hover:bg-primary/20 dark:hover:bg-primary/25 active:bg-primary/30"
         >
-          <div className="absolute right-0.5 top-1/2 -translate-y-1/2 w-0.5 h-8 rounded-full bg-gray-300 dark:bg-gray-600 group-hover:bg-purple-400 dark:group-hover:bg-purple-500 transition-colors" />
+          <div className="absolute right-0.5 top-1/2 h-8 w-0.5 -translate-y-1/2 rounded-full bg-gray-300 transition-colors dark:bg-gray-600 group-hover:bg-primary dark:group-hover:bg-primary" />
         </div>
       )}
 
@@ -126,7 +127,7 @@ export function SceneSidebar({
             className="flex items-center gap-2 cursor-pointer rounded-lg px-1.5 -mx-1.5 py-1 -my-1 hover:bg-gray-100/80 dark:hover:bg-gray-800/60 active:scale-[0.97] transition-all duration-150"
             title={t('generation.backToHome')}
           >
-            <img src="/logo-horizontal.png" alt="OpenMAIC" className="h-6" />
+            <OpenLumaLogo size="sm" />
           </button>
           <button
             onClick={() => onCollapseChange(true)}
@@ -161,7 +162,7 @@ export function SceneSidebar({
                 className={cn(
                   'group relative rounded-lg transition-all duration-200 cursor-pointer flex flex-col gap-1 p-1.5',
                   isActive
-                    ? 'bg-purple-50 dark:bg-purple-900/20 ring-1 ring-purple-200 dark:ring-purple-700'
+                    ? 'bg-primary/8 dark:bg-primary/16 ring-1 ring-primary/20 dark:ring-primary/30'
                     : 'hover:bg-gray-50/80 dark:hover:bg-gray-800/50',
                 )}
               >
@@ -172,7 +173,7 @@ export function SceneSidebar({
                       className={cn(
                         'text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shrink-0',
                         isActive
-                          ? 'bg-purple-600 dark:bg-purple-500 text-white shadow-sm shadow-purple-500/30'
+                          ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
                           : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
                       )}
                     >
@@ -183,7 +184,7 @@ export function SceneSidebar({
                       className={cn(
                         'text-xs font-bold truncate transition-colors',
                         isActive
-                          ? 'text-purple-700 dark:text-purple-300'
+                          ? 'text-primary dark:text-primary'
                           : 'text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100',
                       )}
                     >
@@ -310,9 +311,9 @@ export function SceneSidebar({
                     {isSlide && (
                       <div
                         className={cn(
-                          'absolute inset-0 bg-purple-500/0 transition-colors',
+                          'absolute inset-0 bg-primary/0 transition-colors',
                           isActive
-                            ? 'bg-purple-500/0'
+                            ? 'bg-primary/0'
                             : 'group-hover:bg-black/5 dark:group-hover:bg-white/5',
                         )}
                       />
@@ -351,7 +352,7 @@ export function SceneSidebar({
                     !isFailed && !isActive && 'opacity-60',
                     isActive &&
                       !isFailed &&
-                      'bg-purple-50 dark:bg-purple-900/20 ring-1 ring-purple-200 dark:ring-purple-700 opacity-100',
+                      'bg-primary/8 dark:bg-primary/16 ring-1 ring-primary/20 dark:ring-primary/30 opacity-100',
                   )}
                 >
                   {/* Scene Header */}
@@ -361,7 +362,7 @@ export function SceneSidebar({
                         className={cn(
                           'text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shrink-0',
                           isActive && !isFailed
-                            ? 'bg-purple-600 dark:bg-purple-500 text-white shadow-sm shadow-purple-500/30'
+                            ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500',
                         )}
                       >
@@ -371,7 +372,7 @@ export function SceneSidebar({
                         className={cn(
                           'text-xs font-bold truncate transition-colors',
                           isActive && !isFailed
-                            ? 'text-purple-700 dark:text-purple-300'
+                            ? 'text-primary dark:text-primary'
                             : isFailed
                               ? 'text-gray-700 dark:text-gray-200'
                               : 'text-gray-400 dark:text-gray-500',

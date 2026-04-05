@@ -9,6 +9,7 @@ import { ThemeProvider } from '@/lib/hooks/use-theme';
 import { I18nProvider } from '@/lib/hooks/use-i18n';
 import { Toaster } from '@/components/ui/sonner';
 import { ServerProvidersInit } from '@/components/server-providers-init';
+import { APP_DESCRIPTION, APP_NAME } from '@/lib/branding';
 
 const inter = localFont({
   src: '../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2',
@@ -17,9 +18,8 @@ const inter = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'OpenMAIC',
-  description:
-    'The open-source AI interactive classroom. Upload a PDF to instantly generate an immersive, multi-agent learning experience.',
+  title: APP_NAME,
+  description: APP_DESCRIPTION,
 };
 
 export default function RootLayout({
